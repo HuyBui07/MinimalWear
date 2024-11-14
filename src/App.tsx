@@ -1,35 +1,60 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
+
+
+// Libraries
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
+
+// Components
+import Header from "./components/layouts/Header";
+import Footer from "./components/layouts/Footer";
+
+//Pages
+import Home from "./pages/Home";
+import SignIn from "./pages/authentication/SignIn";
+import SignUp from "./pages/authentication/SignUp";
+import UpperWear from "./pages/UpperWear";
+import LowerWear from "./pages/LowerWear";
+import UnderWear from "./pages/UnderWear";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const location = useLocation();
+  console.log(location.pathname);
+  const hideHeaderPaths = ["/signin", "/signup"];
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      
+      {hideHeaderPaths.includes(location.pathname) ? null : <Header />}
+      <div
+        className={`flex flex-col items-center ${
+          !hideHeaderPaths.includes(location.pathname) && "pt-32"
+        }`}
+      >
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/upperwear" element={<UpperWear />} />
+          <Route path="/lowerwear" element={<LowerWear />} />
+          <Route path="/underwear" element={<UnderWear />} />
+        </Routes>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      {hideHeaderPaths.includes(location.pathname) ? null : <Footer />}
     </>
-  )
+  );
 }
 
-export default App
+function AppWrapper() {
+  return (
+    <Router>
+      <App />
+    </Router>
+  );
+}
+
+export default AppWrapper;
