@@ -1,6 +1,5 @@
 import "./App.css";
 
-
 // Libraries
 import {
   BrowserRouter as Router,
@@ -20,6 +19,11 @@ import SignUp from "./pages/authentication/SignUp";
 import UpperWear from "./pages/UpperWear";
 import LowerWear from "./pages/LowerWear";
 import UnderWear from "./pages/UnderWear";
+import ProductDetails from "./pages/ProductDetails";
+import Member from "./pages/member/Member";
+import EditMember from "./pages/member/EditMember";
+import Cart from "./pages/Cart";
+import Wishlist from "./pages/Wishlist";
 
 function App() {
   const location = useLocation();
@@ -28,7 +32,6 @@ function App() {
 
   return (
     <>
-      
       {hideHeaderPaths.includes(location.pathname) ? null : <Header />}
       <div
         className={`flex flex-col items-center ${
@@ -42,6 +45,12 @@ function App() {
           <Route path="/upperwear" element={<UpperWear />} />
           <Route path="/lowerwear" element={<LowerWear />} />
           <Route path="/underwear" element={<UnderWear />} />
+          <Route path="/products" element={<ProductDetails />} />
+          <Route path="/member" element={<Member />} />
+          <Route path="/member/edit" element={<EditMember />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/wishlist" element={<Wishlist />} />
+          <Route path="*" element={<div>404 Not Found</div>} />
         </Routes>
       </div>
       {hideHeaderPaths.includes(location.pathname) ? null : <Footer />}

@@ -1,8 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+
+import { API_CONST } from "../../constants";
+
+// redux
+import { useDispatch } from "react-redux";
 
 export default function SignIn() {
   const navigate = useNavigate();
+
+  const user = useSelector((state: RootState) => state.user.user);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,20 +33,22 @@ export default function SignIn() {
 
     try {
       // Call the API to sign in with email and password
-      await fetch("http://localhost:3001/signin", {
+      await fetch(API_CONST + "/user/sign-in", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
-      }).then((response) => {
+      }).then(async (response) => {
         if (response.ok) {
-          // If the response is ok, navigate to the home page
+          const data = await response.json();
+          localStorage.setItem("accessToken", data.token);
           navigate("/");
         }
       });
-    } catch (error) {
+    } catch (error: any) {
       // If there is an error, log the error
+      setError(error.message);
       console.error(error);
     }
   };

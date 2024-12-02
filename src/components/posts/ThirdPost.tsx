@@ -20,7 +20,7 @@ function ThirdPost() {
           these exclusive pieces and elevate your fashion game!
         </p>
 
-        <button className="w-40 h-10 bg-black text-white font-bold rounded">
+        <button className="w-40 h-14 font-semibold text-xl tracking-widest border-black border rounded-none hover:text-white hover:bg-black">
           Explore Now
         </button>
       </div>

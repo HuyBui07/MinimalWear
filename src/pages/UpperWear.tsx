@@ -60,9 +60,9 @@ function UpperWear() {
   ]);
 
   return (
-    <div className="flex flex-col w-full mt-10 space-y-7 px-28">
+    <div className="flex flex-col w-full mt-10 space-y-7 px-28 mb-10">
       <SortingBar />
-      <div className="grid grid-cols-4 w-full justify-items-center gap-x-20">
+      <div className="grid grid-cols-4 w-full justify-items-center gap-x-20 gap-y-10">
         {products.map((product, index) => (
           <Product
             key={index}

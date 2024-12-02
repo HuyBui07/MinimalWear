@@ -19,7 +19,7 @@ function SecondPost() {
           something for everyone. Hurry, these deals won't last long!
         </p>
 
-        <button className="w-40 h-10 bg-black text-white font-bold rounded">
+        <button className="w-40 h-14 font-semibold text-xl tracking-widest border-black border rounded-none hover:text-white hover:bg-black">
           Shop Now
         </button>
       </div>

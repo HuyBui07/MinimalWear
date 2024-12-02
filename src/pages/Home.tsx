@@ -1,3 +1,9 @@
+import { useState, useEffect } from "react";
+
+// images
+import product from "../assets/product-demo.png";
+
+// icons
 import { IoIosArrowBack } from "react-icons/io";
 import { IoIosArrowForward } from "react-icons/io";
 import { FaFire } from "react-icons/fa";
@@ -12,8 +18,8 @@ import FirstPost from "../components/posts/FirstPost";
 import SecondPost from "../components/posts/SecondPost";
 import ThirdPost from "../components/posts/ThirdPost";
 
-// icon
-import fire from "../assets/fire.png";
+// components
+import Product from "../components/Product";
 
 interface ArrowProps {
   className?: string;
@@ -46,6 +52,59 @@ const NextArrow = (props: ArrowProps) => {
 };
 
 function Home() {
+  const [products, setProducts] = useState([
+    {
+      image: product,
+      productName: "Grateful Oversized Tee",
+      price: 100000,
+    },
+    {
+      image: product,
+      productName: "Grateful Oversized Tee",
+      price: 100000,
+    },
+    {
+      image: product,
+      productName: "Grateful Oversized Tee",
+      price: 100000,
+    },
+    {
+      image: product,
+      productName: "Grateful Oversized Tee",
+      price: 100000,
+    },
+    {
+      image: product,
+      productName: "Grateful Oversized Tee",
+      price: 100000,
+    },
+    {
+      image: product,
+      productName: "Grateful Oversized Tee",
+      price: 100000,
+    },
+    {
+      image: product,
+      productName: "Grateful Oversized Tee",
+      price: 100000,
+    },
+    {
+      image: product,
+      productName: "Grateful Oversized Tee",
+      price: 100000,
+    },
+    {
+      image: product,
+      productName: "Grateful Oversized Tee",
+      price: 100000,
+    },
+    {
+      image: product,
+      productName: "Grateful Oversized Tee",
+      price: 100000,
+    },
+  ]);
+
   const settings = {
     arrows: true,
     dots: true,
@@ -59,6 +118,15 @@ function Home() {
     prevArrow: <PrevArrow />,
   };
 
+  const productRowSettings = {
+    infinite: true,
+    speed: 500,
+    slidesToShow: 5,
+    slidesToScroll: 1,
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />,
+  };
+
   return (
     <div className="flex flex-col w-full">
       <Slider {...settings}>
@@ -67,13 +135,13 @@ function Home() {
         <ThirdPost />
       </Slider>
 
-      <div className="flex flex-col mx-28 mt-10">
+      <div className="flex flex-col mx-28 mt-10 gap-5 mb-10">
         <div className="flex flex-row items-center">
           <h4 className="font-bold">Hot Sale</h4>
           <FaFire className="ml-2 text-black text-2xl" />
         </div>
 
-        {/* <Slider>
+        <Slider {...productRowSettings}>
           {products.map((product, index) => (
             <Product
               key={index}
@@ -82,7 +150,7 @@ function Home() {
               price={product.price}
             />
           ))}
-        </Slider> */}
+        </Slider>
       </div>
     </div>
   );
