@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Components
 import AuthModal from "../AuthModal";
@@ -9,7 +9,7 @@ import SearchBar from "../SearchBar";
 
 // Icons
 import men from "../../assets/men.png";
-import cart from "../../assets/shopping-cart.png";
+import cartIcon from "../../assets/shopping-cart.png";
 import user from "../../assets/user.png";
 import search from "../../assets/search.png";
 import heart from "../../assets/heart.png";
@@ -18,6 +18,14 @@ function Header() {
   const isUserAuthenticated = useSelector(
     (state: RootState) => state.user.user
   );
+  const favorite = useSelector(
+    (state: RootState) => state.favorite.favoriteItemIds
+  );
+  const cart = useSelector((state: RootState) => state.cart.items);
+
+  useEffect(() => {
+    console.log(isUserAuthenticated);
+  }, [isUserAuthenticated]);
 
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,7 +39,7 @@ function Header() {
   };
 
   const handleHeartIconClick = () => {
-    if (isUserAuthenticated) {
+    if (isUserAuthenticated || true) {
       navigate("/wishlist");
     } else {
       setIsModalOpen(true);
@@ -39,7 +47,7 @@ function Header() {
   };
 
   const handleCartIconClick = () => {
-    if (isUserAuthenticated) {
+    if (isUserAuthenticated || true) {
       navigate("/cart");
     } else {
       setIsModalOpen(true);
@@ -53,21 +61,21 @@ function Header() {
     <>
       {isModalOpen && <AuthModal setIsModalOpen={setIsModalOpen} />}
       <div className="fixed top-0 left-0 w-full z-40 bg-white">
-        <div className="bg-gray-200 w-full h-12">
-          <p className="text-center font-extrabold text-lg   pt-2">
-            Contact me at 21520909@gm.uit.edu.vn
+        <div className="bg-gray-200 w-full h-8 flex justify-center items-center">
+          <p className="text-center font-extrabold text-sm">
+            Contact me at 21520909@gm.uit.edu.vn {isUserAuthenticated?.email}
           </p>
         </div>
         {/* {searchModeOn && <SearchBar />} */}
 
-        <div className="flex flex-row w-full h-20 items-center px-28 border-b-2">
+        <div className="flex flex-row w-full h-20 items-center px-36 border-b-2">
           {searchModeOn ? (
             <SearchBar setSearchModeOn={setSearchModeOn} />
           ) : (
             <>
               <div>
-                <a href="/">
-                  <img src={men} className="h-12" />
+                <a onClick={() => navigate("/")}>
+                  <img src={men} className="h-12 cursor-pointer" />
                 </a>
               </div>
 
@@ -79,19 +87,19 @@ function Header() {
                   Hot
                 </a>
                 <a
-                  href="/upperwear"
+                  onClick={() => navigate("/upperwear")}
                   className="font-semibold text-2xl hover:underline cursor-pointer"
                 >
                   Áo
                 </a>
                 <a
-                  href="/lowerwear"
+                  onClick={() => navigate("/lowerwear")}
                   className="font-semibold text-2xl hover:underline cursor-pointer"
                 >
                   Quần
                 </a>
                 <a
-                  href="/underwear"
+                  onClick={() => navigate("/underwear")}
                   className="font-semibold text-2xl hover:underline cursor-pointer"
                 >
                   Đồ Lót
@@ -120,19 +128,23 @@ function Header() {
                     className="h-6 cursor-pointer"
                     onClick={handleHeartIconClick}
                   />
-                  <div className="absolute top-0 right-0 bg-black text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
-                    0
-                  </div>
+                  {favorite.length > 0 && (
+                    <div className="absolute top-0 right-0 bg-black text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
+                      {favorite.length}
+                    </div>
+                  )}
                 </div>
                 <div className="relative h-9 w-9 flex items-center justify-center">
                   <img
-                    src={cart}
+                    src={cartIcon}
                     className="h-6 cursor-pointer"
                     onClick={handleCartIconClick}
                   />
-                  <div className="absolute top-0 right-0 bg-black text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
-                    0
-                  </div>
+                  {cart.length > 0 && (
+                    <div className="absolute top-0 right-0 bg-black text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
+                      {cart.length}
+                    </div>
+                  )}
                 </div>
               </div>
             </>

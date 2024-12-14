@@ -33,7 +33,7 @@ export default function SignUp() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, confirmPassword }),
       }).then((response) => {
         if (response.ok) {
           // If the response is ok, navigate to the home page

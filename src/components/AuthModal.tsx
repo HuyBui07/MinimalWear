@@ -5,6 +5,7 @@ import { FaTimes } from "react-icons/fa";
 export default function AuthModal({setIsModalOpen} : {setIsModalOpen: (value: boolean) => void}) {
   const navigate = useNavigate();
   const handleNavigate = () => {
+    setIsModalOpen(false);
     navigate("/signin");
   };
   return (

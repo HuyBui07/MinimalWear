@@ -54,51 +54,61 @@ const NextArrow = (props: ArrowProps) => {
 function Home() {
   const [products, setProducts] = useState([
     {
+      productId: "1",
       image: product,
       productName: "Grateful Oversized Tee",
       price: 100000,
     },
     {
+      productId: "2",
       image: product,
       productName: "Grateful Oversized Tee",
       price: 100000,
     },
     {
+      productId: "3",
       image: product,
       productName: "Grateful Oversized Tee",
       price: 100000,
     },
     {
+      productId: "4",
       image: product,
       productName: "Grateful Oversized Tee",
       price: 100000,
     },
     {
+      productId: "5",
       image: product,
       productName: "Grateful Oversized Tee",
       price: 100000,
     },
     {
+      productId: "6",
       image: product,
       productName: "Grateful Oversized Tee",
       price: 100000,
     },
     {
+      productId: "7",
       image: product,
       productName: "Grateful Oversized Tee",
       price: 100000,
     },
     {
+      productId: "8",
       image: product,
       productName: "Grateful Oversized Tee",
       price: 100000,
     },
     {
+      productId: "9",
       image: product,
       productName: "Grateful Oversized Tee",
       price: 100000,
     },
     {
+      productId: "10",
       image: product,
       productName: "Grateful Oversized Tee",
       price: 100000,
@@ -121,7 +131,7 @@ function Home() {
   const productRowSettings = {
     infinite: true,
     speed: 500,
-    slidesToShow: 5,
+    slidesToShow: 4,
     slidesToScroll: 1,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
@@ -135,7 +145,7 @@ function Home() {
         <ThirdPost />
       </Slider>
 
-      <div className="flex flex-col mx-28 mt-10 gap-5 mb-10">
+      <div className="flex flex-col mx-36 mt-10 gap-5 mb-10">
         <div className="flex flex-row items-center">
           <h4 className="font-bold">Hot Sale</h4>
           <FaFire className="ml-2 text-black text-2xl" />
@@ -145,6 +155,7 @@ function Home() {
           {products.map((product, index) => (
             <Product
               key={index}
+              productId={product.productId}
               image={product.image}
               productName={product.productName}
               price={product.price}

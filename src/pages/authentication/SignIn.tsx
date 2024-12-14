@@ -1,17 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
 
 import { API_CONST } from "../../constants";
 
 // redux
 import { useDispatch } from "react-redux";
+import { setUser } from "../../redux/slices/userSlice";
 
 export default function SignIn() {
   const navigate = useNavigate();
-
-  const user = useSelector((state: RootState) => state.user.user);
+  const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,10 +22,10 @@ export default function SignIn() {
 
   const handleSignIn = async () => {
     if (!email) {
-      setError("Please enter your email");
+      setError("Please enter your email!");
       return;
     } else if (!password) {
-      setError("Please enter your password");
+      setError("Please enter your password!");
       return;
     }
 
@@ -40,9 +38,15 @@ export default function SignIn() {
         },
         body: JSON.stringify({ email, password }),
       }).then(async (response) => {
+        if (response.status === 401) {
+          setError("Invalid email or password!");
+          return;
+        }
+
         if (response.ok) {
           const data = await response.json();
           localStorage.setItem("accessToken", data.token);
+          dispatch(setUser(data.userInfo));
           navigate("/");
         }
       });
