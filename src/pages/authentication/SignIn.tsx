@@ -21,13 +21,13 @@ export default function SignIn() {
   };
 
   const handleSignIn = async () => {
-    if (!email) {
-      setError("Please enter your email!");
-      return;
-    } else if (!password) {
-      setError("Please enter your password!");
-      return;
-    }
+    // if (!email) {
+    //   setError("Please enter your email!");
+    //   return;
+    // } else if (!password) {
+    //   setError("Please enter your password!");
+    //   return;
+    // }
 
     try {
       // Call the API to sign in with email and password
@@ -36,24 +36,27 @@ export default function SignIn() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
-      }).then(async (response) => {
-        if (response.status === 401) {
-          setError("Invalid email or password!");
-          return;
+        body: JSON.stringify({
+          email: "testmail1@gmail.com",
+          password: "kocho112233",
+        }),
+      }).then(async (response: any) => {
+        const data = await response.json();
+        if (!response.ok) {
+          setError(data.message);
         }
 
         if (response.ok) {
-          const data = await response.json();
-          localStorage.setItem("accessToken", data.token);
+          localStorage.setItem("accessToken", data.access_token);
           dispatch(setUser(data.userInfo));
           navigate("/");
         }
       });
     } catch (error: any) {
       // If there is an error, log the error
+      await error.json();
       setError(error.message);
-      console.error(error);
+      console.error(error.message);
     }
   };
 

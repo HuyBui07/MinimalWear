@@ -2,8 +2,6 @@ import { createSlice } from "@reduxjs/toolkit";
 
 type CartItem = {
   productId: string;
-  name: string;
-  price: number;
   color: string;
   size: string;
   quantity: number;

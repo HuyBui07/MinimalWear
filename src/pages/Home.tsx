@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
-// images
-import product from "../assets/product-demo.png";
+// constants
+import { API_CONST } from "../constants";
 
 // icons
 import { IoIosArrowBack } from "react-icons/io";
@@ -18,8 +18,12 @@ import FirstPost from "../components/posts/FirstPost";
 import SecondPost from "../components/posts/SecondPost";
 import ThirdPost from "../components/posts/ThirdPost";
 
+// images
+import product from "../assets/product-demo.png";
+
 // components
 import Product from "../components/Product";
+import { ProductPageItem } from "../types/ProductPageItem";
 
 interface ArrowProps {
   className?: string;
@@ -52,68 +56,85 @@ const NextArrow = (props: ArrowProps) => {
 };
 
 function Home() {
-  const [products, setProducts] = useState([
+  const [products, setProducts] = useState<ProductPageItem[]>([
     {
-      productId: "1",
+      _id: "1",
       image: product,
-      productName: "Grateful Oversized Tee",
+      name: "Grateful Oversized Tee",
       price: 100000,
     },
     {
-      productId: "2",
+      _id: "2",
       image: product,
-      productName: "Grateful Oversized Tee",
+      name: "Grateful Oversized Tee",
       price: 100000,
     },
     {
-      productId: "3",
+      _id: "3",
       image: product,
-      productName: "Grateful Oversized Tee",
+      name: "Grateful Oversized Tee",
       price: 100000,
     },
     {
-      productId: "4",
+      _id: "4",
       image: product,
-      productName: "Grateful Oversized Tee",
+      name: "Grateful Oversized Tee",
       price: 100000,
     },
     {
-      productId: "5",
+      _id: "5",
       image: product,
-      productName: "Grateful Oversized Tee",
+      name: "Grateful Oversized Tee",
       price: 100000,
     },
     {
-      productId: "6",
+      _id: "6",
       image: product,
-      productName: "Grateful Oversized Tee",
+      name: "Grateful Oversized Tee",
       price: 100000,
     },
     {
-      productId: "7",
+      _id: "7",
       image: product,
-      productName: "Grateful Oversized Tee",
+      name: "Grateful Oversized Tee",
       price: 100000,
     },
     {
-      productId: "8",
+      _id: "8",
       image: product,
-      productName: "Grateful Oversized Tee",
+      name: "Grateful Oversized Tee",
       price: 100000,
     },
     {
-      productId: "9",
+      _id: "9",
       image: product,
-      productName: "Grateful Oversized Tee",
+      name: "Grateful Oversized Tee",
       price: 100000,
     },
     {
-      productId: "10",
+      _id: "10",
       image: product,
-      productName: "Grateful Oversized Tee",
+      name: "Grateful Oversized Tee",
       price: 100000,
     },
   ]);
+
+  // useEffect(() => {
+  //   const fetchHotProducts = async () => {
+  //     try {
+  //       let endpoint = "/product/get-all?page=1" + "&sort=best-seller";
+  //       const response = await fetch(API_CONST + endpoint);
+  //       if (!response.ok) {
+  //         throw new Error("Failed to fetch products");
+  //       }
+  //       const data = await response.json();
+  //       setProducts(data.data);
+  //     } catch (error) {
+  //       console.error("Error fetching hot products:", error);
+  //     }
+  //   };
+  //   fetchHotProducts();
+  // }, []);
 
   const settings = {
     arrows: true,
@@ -151,15 +172,17 @@ function Home() {
           <FaFire className="ml-2 text-black text-2xl" />
         </div>
 
-        <Slider {...productRowSettings}>
-          {products.map((product, index) => (
-            <Product
-              key={index}
-              productId={product.productId}
-              image={product.image}
-              productName={product.productName}
-              price={product.price}
-            />
+        <Slider {...productRowSettings} centerMode>
+          {products?.map((product, index) => (
+            <div className="ml-2">
+              <Product
+                key={index}
+                productId={product._id}
+                image={product.image}
+                productName={product.name}
+                price={product.price}
+              />
+            </div>
           ))}
         </Slider>
       </div>

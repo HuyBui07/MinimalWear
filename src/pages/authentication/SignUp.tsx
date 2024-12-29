@@ -1,8 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_CONST } from "../../constants";
+
+// redux
+import { useDispatch } from "react-redux";
+import { setUser } from "../../redux/slices/userSlice";
 
 export default function SignUp() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,15 +34,21 @@ export default function SignUp() {
 
     try {
       // Call the API to sign in with email and password
-      await fetch("http://localhost:3001/signup", {
+      await fetch(API_CONST + "/user/sign-up", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password, confirmPassword }),
-      }).then((response) => {
+      }).then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) {
+          setError(data.message);
+        }
+
         if (response.ok) {
-          // If the response is ok, navigate to the home page
+          localStorage.setItem("accessToken", data.access_token);
+          dispatch(setUser(data.userInfo));
           navigate("/");
         }
       });

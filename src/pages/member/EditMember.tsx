@@ -79,7 +79,7 @@ export default function EditMember() {
               <input
                 type="email"
                 className="bg-gray-200 border-b-2 border-gray-400 ml-4 p-2 w-4/5 text-black"
-                value={user?.email}
+                value={user?.phone}
               />
             </div>
 
@@ -88,7 +88,7 @@ export default function EditMember() {
               <input
                 type="email"
                 className="bg-gray-200 border-b-2 border-gray-400 ml-4 p-2 w-4/5 text-black"
-                value={user?.email}
+                value={user?.address}
               />
             </div>
 

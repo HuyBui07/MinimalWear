@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 // Components
-import AuthModal from "../AuthModal";
+import AuthModal from "../modals/AuthModal";
 import SearchBar from "../SearchBar";
 
 // Icons
@@ -18,14 +18,8 @@ function Header() {
   const isUserAuthenticated = useSelector(
     (state: RootState) => state.user.user
   );
-  const favorite = useSelector(
-    (state: RootState) => state.favorite.favoriteItemIds
-  );
-  const cart = useSelector((state: RootState) => state.cart.items);
-
-  useEffect(() => {
-    console.log(isUserAuthenticated);
-  }, [isUserAuthenticated]);
+  const favoriteSize = isUserAuthenticated?.favorite.length || 0;
+  const cartSize = isUserAuthenticated?.cartSize || 0;
 
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -128,9 +122,9 @@ function Header() {
                     className="h-6 cursor-pointer"
                     onClick={handleHeartIconClick}
                   />
-                  {favorite.length > 0 && (
+                  {favoriteSize > 0 && (
                     <div className="absolute top-0 right-0 bg-black text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
-                      {favorite.length}
+                      {favoriteSize}
                     </div>
                   )}
                 </div>
@@ -140,9 +134,9 @@ function Header() {
                     className="h-6 cursor-pointer"
                     onClick={handleCartIconClick}
                   />
-                  {cart.length > 0 && (
+                  {cartSize > 0 && (
                     <div className="absolute top-0 right-0 bg-black text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
-                      {cart.length}
+                      {cartSize}
                     </div>
                   )}
                 </div>
