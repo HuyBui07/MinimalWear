@@ -13,8 +13,25 @@ const userSlice = createSlice({
     deleteUser: (state) => {
       state.user = null;
     },
+    addFavorite: (state, action) => {
+      if (state.user) {
+        state.user.favorite.push(action.payload);
+      }
+    },
+    removeFavorite: (state, action) => {
+      if (state.user) {
+        state.user.favorite = state.user.favorite.filter(
+          (id) => id !== action.payload
+        );
+      }
+    },
+     setCartSize: (state, action) => {
+    if (state.user) {
+      state.user.cartSize = action.payload;
+     }
+    },
   },
 });
 
-export const { setUser, deleteUser } = userSlice.actions;
+export const { setUser, deleteUser, addFavorite, removeFavorite, setCartSize } = userSlice.actions;
 export default userSlice.reducer;

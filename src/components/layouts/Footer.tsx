@@ -2,7 +2,7 @@ import men from "../../assets/men.png";
 
 function Footer() {
   return (
-    <div className="flex items-center w-full h-64 shadow-upward-md px-28">
+    <div className="flex items-center w-full h-64 shadow-upward-md px-36">
       <div className='text-lg'>
         <p className="text-gray-500 text-xl mb-6">
           BẢN QUYỀN THUỘC CÔNG TY TNHH MENNIMAL. BẢO LƯU MỌI QUYỀN
@@ -18,5 +18,6 @@ function Footer() {
     </div>
   );
 }
+
 
 export default Footer;

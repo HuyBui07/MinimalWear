@@ -1,16 +1,12 @@
-import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 
 // Assets
 import RightArrow from "../../assets/chevron.png";
 import LeftArrow from "../../assets/left-chevron.png";
 
-function SortingBar() {
-  const [sortBy, setSortBy] = useState("popular");
-  const [page, setPage] = useState(1);
-
-  useEffect(() => {
-    console.log(sortBy);
-  }, [sortBy]);
+function SortingBar(props: any) {
+  // props
+  const { page, setPage, sortBy, setSortBy } = props;
 
   return (
     <div className="flex flex-row justify-between items-center px-12 py-4 bg-[#D9D9D9] bg-opacity-[0.2] rounded">
@@ -18,17 +14,6 @@ function SortingBar() {
         <p>Sắp xếp theo</p>
 
         <div className="flex flex-row space-x-9">
-          <div
-            onClick={() => setSortBy("popular")}
-            className="bg-[#D9D9D9] w-36 h-11 rounded-md flex items-center justify-center cursor-pointer"
-            style={
-              sortBy === "popular"
-                ? { backgroundColor: "black", color: "white" }
-                : {}
-            }
-          >
-            Phổ biến
-          </div>
           <div
             onClick={() => setSortBy("newest")}
             className="bg-[#D9D9D9] w-36 h-11 rounded-md flex items-center justify-center cursor-pointer"
@@ -41,10 +26,22 @@ function SortingBar() {
             Mới nhất
           </div>
           <div
-            onClick={() => setSortBy("bestsale")}
+            onClick={() => setSortBy("highest-rating")}
             className="bg-[#D9D9D9] w-36 h-11 rounded-md flex items-center justify-center cursor-pointer"
             style={
-              sortBy === "bestsale"
+              sortBy === "highest-rating"
+                ? { backgroundColor: "black", color: "white" }
+                : {}
+            }
+          >
+            Yêu thích
+          </div>
+
+          <div
+            onClick={() => setSortBy("best-seller")}
+            className="bg-[#D9D9D9] w-36 h-11 rounded-md flex items-center justify-center cursor-pointer"
+            style={
+              sortBy === "best-seller"
                 ? { backgroundColor: "black", color: "white" }
                 : {}
             }
@@ -52,8 +49,16 @@ function SortingBar() {
             Bán chạy
           </div>
 
-          <select className="bg-[#D9D9D9] w-44 h-11 rounded-md flex items-center justify-center cursor-pointer p-2">
-            <option value="" disabled selected hidden>
+          <select
+            className="bg-[#D9D9D9] w-44 h-11 rounded-md flex items-center justify-center cursor-pointer p-2"
+            style={
+              sortBy === "price-asc" || sortBy === "price-desc"
+                ? { backgroundColor: "black", color: "white" }
+                : {}
+            }
+            onChange={(e) => setSortBy(e.target.value)}
+          >
+            <option disabled selected hidden>
               Giá
             </option>
             <option value="price-asc">Giá: Thấp đến Cao</option>

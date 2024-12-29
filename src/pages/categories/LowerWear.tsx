@@ -5,83 +5,48 @@ import SortingBar from "../../components/layouts/SortingBar";
 import Product from "../../components/Product";
 import product from "../../assets/product-demo.png";
 
+// types
+import { ProductPageItem } from "../../types/ProductPageItem";
+
+// const
+import { API_CONST } from "../../constants";
+
 function LowerWear() {
-  const [products, setProducts] = useState([
-    {
-      productId: "1",
-      image: product,
-      productName: "Grateful Oversized Tee",
-      price: 100000,
-    },
-    {
-      productId: "2",
-      image: product,
-      productName: "Grateful Oversized Tee",
-      price: 100000,
-    },
-    {
-      productId: "3",
-      image: product,
-      productName: "Grateful Oversized Tee",
-      price: 100000,
-    },
-    {
-      productId: "4",
-      image: product,
-      productName: "Grateful Oversized Tee",
-      price: 100000,
-    },
-    {
-      productId: "5",
-      image: product,
-      productName: "Grateful Oversized Tee",
-      price: 100000,
-    },
-    {
-      productId: "6",
-      image: product,
-      productName: "Grateful Oversized Tee",
-      price: 100000,
-    },
-    {
-      productId: "7",
-      image: product,
-      productName: "Grateful Oversized Tee",
-      price: 100000,
-    },
-    {
-      productId: "8",
-      image: product,
-      productName: "Grateful Oversized Tee",
-      price: 100000,
-    },
-    {
-      productId: "9",
-      image: product,
-      productName: "Grateful Oversized Tee",
-      price: 100000,
-    },
-    {
-      productId: "10",
-      image: product,
-      productName: "Grateful Oversized Tee",
-      price: 100000,
-    },
-  ]);
+  const [page, setPage] = useState(1);
+  const [products, setProducts] = useState<ProductPageItem[]>([]);
+  const [sortBy, setSortBy] = useState("newest");
+
+  useEffect(() => {
+    const fetchLowerwears = async () => {
+      let endpoint = "/product/get-all?page=" + page + "&filter=lowerwear" + "&sort=" + sortBy;
+    
+      await fetch(API_CONST + endpoint).then(async (response: any) => {
+        const data = await response.json();
+        setProducts(data.data);
+      });
+    };
+    fetchLowerwears();
+  }, [page, sortBy]);
 
   return (
     <div className="flex flex-col w-full mt-10 space-y-7 px-36 mb-10">
-      <SortingBar />
+      <SortingBar
+        page={page}
+        setPage={setPage}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+      />
       <div className="grid grid-cols-4 w-full justify-items-center gap-x-16 gap-y-10">
-        {products.map((product, index) => (
-          <Product
-            key={index}
-            productId={product.productId}
-            image={product.image}
-            productName={product.productName}
-            price={product.price}
-          />
-        ))}
+        {products.length != 0 &&
+          products.map((product, index) => (
+            <Product
+              key={index}
+              productId={product._id}
+              productName={product.name}
+              image={product.image}
+              price={product.price}
+            />
+          ))}
       </div>
     </div>
   );

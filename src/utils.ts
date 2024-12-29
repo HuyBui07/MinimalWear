@@ -1,16 +1,16 @@
 export function getBackgroundColor(color: string) {
   switch (color) {
-    case "Black":
+    case "black":
       return "bg-black";
-    case "Red":
+    case "red":
       return "bg-red-500";
-    case "Green":
+    case "green":
       return "bg-green-500";
-    case "Blue":
+    case "blue":
       return "bg-blue-500";
-    case "White":
+    case "white":
       return "bg-gray-100";
-    case "Gray":
+    case "gray":
       return "bg-gray-300";
     default:
       return "bg-gray-500";
