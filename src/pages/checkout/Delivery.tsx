@@ -1,90 +1,46 @@
 import { useState, useEffect } from "react";
 
-// images
-import productPic from "../../assets/product-demo.png";
+import { useNavigate } from "react-router-dom";
+
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import { setDelivery, setAddress } from "../../redux/slices/orderSlice";
 
 // utils
 import { formatPrice } from "../../utils";
 
-import { FaTimes, FaExclamationTriangle } from "react-icons/fa";
+// icons
+import { FaExclamationTriangle } from "react-icons/fa";
 
 export default function Delivery() {
-  const [cart, setCart] = useState([
-    {
-      id: "1",
-      name: "Áo thun nam",
-      price: 100000,
-      color: "Black",
-      size: "M",
-      quantity: 1,
-    },
-    {
-      id: "2",
-      name: "Áo thun nam",
-      price: 100000,
-      color: "Black",
-      size: "M",
-      quantity: 1,
-    },
-    {
-      id: "3",
-      name: "Áo thun nam",
-      price: 100000,
-      color: "Black",
-      size: "M",
-      quantity: 1,
-    },
-  ]);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const user = useSelector((state: RootState) => state.user.user);
+  const [userAddress, setUserAddress] = useState(user?.address);
+  const cart = useSelector((state: RootState) => state.order.order?.products);
   const [totalPrice, setTotalPrice] = useState(0);
   const [selectedDelivery, setSelectedDelivery] = useState("standard");
 
   useEffect(() => {
-    const totalPrice = cart.reduce(
+    const totalPrice = cart?.reduce(
       (total, product) => total + product.price * product.quantity,
       0
     );
-    setTotalPrice(totalPrice);
+    setTotalPrice(totalPrice || 0);
+    if (userAddress != "NA") {
+      dispatch(setAddress(userAddress));
+    }
   }, [cart]);
 
-  const propProductList = [
-    {
-      id: "1",
-      name: "Áo thun nam",
-      price: 100000,
-      color: "Black",
-      size: "M",
-    },
-    {
-      id: "2",
-      name: "Áo thun nam",
-      price: 100000,
-      color: "Black",
-      size: "M",
-    },
-    {
-      id: "3",
-      name: "Áo thun nam",
-      price: 100000,
-      color: "Black",
-      size: "M",
-    },
-  ];
+  const handleNextStep = () => {
+    if (userAddress == "NA") {
+      navigate("/member/edit");
+      return;
+    }
 
-  const handleRemoveProduct = (id: string) => {
-    setCart(cart.filter((product) => product.id !== id));
-  };
-
-  const handleQuantityChange = (id: string, quantity: number) => {
-    setCart(
-      cart.map((product) =>
-        product.id === id ? { ...product, quantity } : product
-      )
-    );
-  };
-
-  const getQuantity = (id: string) => {
-    const product = cart.find((product) => product.id === id);
-    return product?.quantity || 1;
+    navigate("/checkout/payment");
+    dispatch(setDelivery(selectedDelivery));
   };
 
   return (
@@ -138,12 +94,24 @@ export default function Delivery() {
               </div>
 
               <div className="h-[2px] w-full bg-gray-100 my-6"></div>
-              <p className="mb-5 flex items-center">
-                <FaExclamationTriangle className="mr-2" />
-                Bạn chưa đăng ký địa chỉ
-              </p>
-              <button className="w-80 h-12 font-semibold text-lg tracking-widest border-black border rounded-none hover:opacity-70">
-                ĐĂNG KÝ ĐỊA CHỈ MỚI
+              {userAddress == "NA" ? (
+                <p className="mb-5 flex items-center">
+                  <FaExclamationTriangle className="mr-2" />
+                  Bạn chưa đăng ký địa chỉ
+                </p>
+              ) : (
+                <p className="mb-5 flex items-center">
+                  Địa chỉ đăng ký: {userAddress}
+                </p>
+              )}
+
+              <button
+                className="w-fit px-10 h-12 font-semibold text-lg tracking-widest border-black border rounded-none hover:opacity-70"
+                onClick={handleNextStep}
+              >
+                {userAddress == "NA"
+                  ? "ĐĂNG KÝ ĐỊA CHỈ MỚI"
+                  : "CHỌN PHƯƠNG THỨC THANH TOÁN"}
               </button>
             </div>
           </div>
@@ -157,20 +125,32 @@ export default function Delivery() {
           </div>
         </div>
 
-        <div className="flex flex-col w-1/3 h-fit sticky top-48">
+        <div className="flex flex-col w-1/3 h-fit sticky top-44">
           <div className="flex flex-col w-full border py-10 px-5">
             <p className="font-bold text-lg mb-10">
-              TỔNG ĐƠN HÀNG| {propProductList.length} SẢN PHẨM
+              TỔNG ĐƠN HÀNG| {cart?.length || 0} SẢN PHẨM
             </p>
-            {cart.map((item) => (
+            {cart?.map((item) => (
               <div className="flex flex-row justify-between">
-                <p>- {item.name}</p>
+                <p>- {item.quantity} {item.name}</p>
                 <p>{formatPrice(item.price * item.quantity)}</p>
               </div>
             ))}
+            <div className="flex flex-row justify-between">
+              <p>- Phí vận chuyển</p>
+              <p>
+                {selectedDelivery == "standard"
+                  ? formatPrice(30000)
+                  : formatPrice(50000)}
+              </p>
+            </div>
             <div className="flex flex-row justify-between mt-2">
               <p className="font-bold text-xl">Tổng cộng</p>
-              <p className="font-bold text-xl">{formatPrice(totalPrice)}</p>
+              <p className="font-bold text-xl">
+                {selectedDelivery == "standard"
+                  ? formatPrice(totalPrice + 30000)
+                  : formatPrice(totalPrice + 50000)}
+              </p>
             </div>
           </div>
         </div>

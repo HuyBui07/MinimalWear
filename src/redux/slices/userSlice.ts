@@ -13,6 +13,13 @@ const userSlice = createSlice({
     deleteUser: (state) => {
       state.user = null;
     },
+    updateUserInfo: (state, action) => {
+      if (state.user) {
+        state.user.email = action.payload?.email || state.user.email;
+        state.user.phone = action.payload?.phone || state.user.phone;
+        state.user.address = action.payload?.address || state.user.address;
+      }
+    },
     addFavorite: (state, action) => {
       if (state.user) {
         state.user.favorite.push(action.payload);
@@ -33,5 +40,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUser, deleteUser, addFavorite, removeFavorite, setCartSize } = userSlice.actions;
+export const { setUser, deleteUser, updateUserInfo, addFavorite, removeFavorite, setCartSize } = userSlice.actions;
 export default userSlice.reducer;

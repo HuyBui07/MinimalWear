@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 
+import { useNavigate } from "react-router-dom";
+
 // reudx
 import { useDispatch } from "react-redux";
 import { setCartSize } from "../redux/slices/userSlice";
+import { addOrder } from "../redux/slices/orderSlice";
 
 // images
 import productPic from "../assets/product-demo.png";
@@ -16,6 +19,7 @@ import { API_CONST } from "../constants";
 type CartItem = {
   productId: string;
   name: string;
+  image: string;
   price: number;
   color: string;
   size: string;
@@ -24,6 +28,7 @@ type CartItem = {
 
 export default function Cart() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [cart, setCart] = useState<CartItem[]>([]);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -42,7 +47,16 @@ export default function Cart() {
         const data = await response.json();
 
         if (response.ok) {
-          setCart(data.data);
+          const cartItems = data.data.map((item: any) => ({
+            productId: item.product._id,
+            name: item.product.name,
+            image: item.product.images[0],
+            price: item.product.price,
+            color: item.color,
+            size: item.size,
+            quantity: item.quantity,
+          }));
+          setCart(cartItems);
         }
       } catch (error) {
         console.error(error);
@@ -94,26 +108,33 @@ export default function Cart() {
     }
   };
 
-  const handleQuantityChange = async (id: string, color: string, size: string, quantity: number) => {
+  const handleQuantityChange = async (
+    id: string,
+    color: string,
+    size: string,
+    quantity: number
+  ) => {
     try {
-      const response = await fetch(API_CONST + "/user/handle-cart?action=update", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-        body: JSON.stringify({
-          productId: id,
-          color: color,
-          size: size,
-          quantity: quantity,
-        }),
-      });
+      const response = await fetch(
+        API_CONST + "/user/handle-cart?action=update",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+          body: JSON.stringify({
+            productId: id,
+            color: color,
+            size: size,
+            quantity: quantity,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-
     } catch (error) {
       console.error("There was a problem with your fetch operation:", error);
     }
@@ -137,9 +158,16 @@ export default function Cart() {
     return product?.quantity || 1;
   };
 
+  const handleCheckOut = async () => {
+    if (cart.length == 0) {
+      return;
+    }
+    dispatch(addOrder(cart));
+    navigate("/checkout/delivery");
+  };
+
   return (
     <>
-      
       <div className="w-full px-36 p-10 mb-10">
         <h3 className="font-bold mb-10">GIỎ HÀNG</h3>
 
@@ -149,7 +177,7 @@ export default function Cart() {
               <>
                 <div className="flex flex-row mb-6">
                   <img
-                    src={productPic}
+                    src={product.image || productPic}
                     alt="product"
                     className="w-52 h-64 mr-5"
                   />
@@ -223,7 +251,9 @@ export default function Cart() {
               </p>
               {cart.map((item) => (
                 <div className="flex flex-row justify-between">
-                  <p>- {item.name}</p>
+                  <p>
+                    - {item.quantity} {item.name}
+                  </p>
                   <p>{formatPrice(item.price * item.quantity)}</p>
                 </div>
               ))}
@@ -232,7 +262,10 @@ export default function Cart() {
                 <p className="font-bold text-xl">{formatPrice(totalPrice)}</p>
               </div>
             </div>
-            <button className="w-full h-12 font-semibold text-xl tracking-widest bg-black text-white rounded-none hover:opacity-70 mt-10 mb-5">
+            <button
+              className="w-full h-12 font-semibold text-xl tracking-widest bg-black text-white rounded-none hover:opacity-70 mt-10 mb-5"
+              onClick={handleCheckOut}
+            >
               THANH TOÁN
             </button>
             <button className="w-full h-12 font-semibold text-xl tracking-widest border-black border rounded-none hover:opacity-70">

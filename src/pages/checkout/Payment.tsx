@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+
 import { useNavigate } from "react-router-dom";
 
-// images
-import productPic from "../../assets/product-demo.png";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import { setPayment } from "../../redux/slices/orderSlice";
 
 // utils
 import { formatPrice } from "../../utils";
@@ -11,84 +13,28 @@ import { FaCheck } from "react-icons/fa";
 
 export default function Payment() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const [cart, setCart] = useState([
-    {
-      id: "1",
-      name: "Áo thun nam",
-      price: 100000,
-      color: "Black",
-      size: "M",
-      quantity: 1,
-    },
-    {
-      id: "2",
-      name: "Áo thun nam",
-      price: 100000,
-      color: "Black",
-      size: "M",
-      quantity: 1,
-    },
-    {
-      id: "3",
-      name: "Áo thun nam",
-      price: 100000,
-      color: "Black",
-      size: "M",
-      quantity: 1,
-    },
-  ]);
+  const order = useSelector((state: RootState) => state.order.order);
+  const cart = order?.products;
+  const deliveryPrice = order?.delivery == "standard" ? 30000 : 50000;
+
   const [totalPrice, setTotalPrice] = useState(0);
   const [selectedPayment, setSelectedPayment] = useState("cod");
 
   useEffect(() => {
-    const totalPrice = cart.reduce(
-      (total, product) => total + product.price * product.quantity,
-      0
-    );
-    setTotalPrice(totalPrice);
+    const totalPrice =
+      cart?.reduce(
+        (total, product) => total + product.price * product.quantity,
+        0
+      ) || 0;
+    setTotalPrice(totalPrice + deliveryPrice);
   }, [cart]);
 
-  const propProductList = [
-    {
-      id: "1",
-      name: "Áo thun nam",
-      price: 100000,
-      color: "Black",
-      size: "M",
-    },
-    {
-      id: "2",
-      name: "Áo thun nam",
-      price: 100000,
-      color: "Black",
-      size: "M",
-    },
-    {
-      id: "3",
-      name: "Áo thun nam",
-      price: 100000,
-      color: "Black",
-      size: "M",
-    },
-  ];
-
-  const handleRemoveProduct = (id: string) => {
-    setCart(cart.filter((product) => product.id !== id));
-  };
-
-  const handleQuantityChange = (id: string, quantity: number) => {
-    setCart(
-      cart.map((product) =>
-        product.id === id ? { ...product, quantity } : product
-      )
-    );
-  };
-
-  const getQuantity = (id: string) => {
-    const product = cart.find((product) => product.id === id);
-    return product?.quantity || 1;
-  };
+  const handleNextStep = () => {
+      navigate("/checkout/orderreview");
+      dispatch(setPayment(selectedPayment));
+    };
 
   return (
     <div className="w-full px-36 p-10 mb-10">
@@ -149,17 +95,21 @@ export default function Payment() {
           </div>
         </div>
 
-        <div className="flex flex-col w-1/3 h-fit sticky top-48">
+        <div className="flex flex-col w-1/3 h-fit sticky top-44">
           <div className="flex flex-col w-full border py-10 px-5">
             <p className="font-bold text-lg mb-10">
-              TỔNG ĐƠN HÀNG| {propProductList.length} SẢN PHẨM
+              TỔNG ĐƠN HÀNG| {cart?.length || 0} SẢN PHẨM
             </p>
-            {cart.map((item) => (
+            {cart?.map((item) => (
               <div className="flex flex-row justify-between">
-                <p>- {item.name}</p>
+                <p>- {item.quantity} {item.name}</p>
                 <p>{formatPrice(item.price * item.quantity)}</p>
               </div>
             ))}
+            <div className="flex flex-row justify-between">
+              <p>- Phí vận chuyển</p>
+              <p>{formatPrice(deliveryPrice)}</p>
+            </div>
             <div className="flex flex-row justify-between mt-2">
               <p className="font-bold text-xl">Tổng cộng</p>
               <p className="font-bold text-xl">{formatPrice(totalPrice)}</p>

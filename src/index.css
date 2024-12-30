@@ -17,6 +17,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Hide scrollbar for IE, Edge and Firefox */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
 .slick-slide>div {
   margin: 0 0px;
 }

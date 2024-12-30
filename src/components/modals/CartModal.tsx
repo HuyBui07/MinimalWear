@@ -11,7 +11,7 @@ export default function CartModal({
   const navigate = useNavigate();
   const handleNavigate = () => {
     setIsModalOpen(false);
-    navigate("/checkout");
+    navigate("/cart");
   };
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 h-screen w-screen">
@@ -43,7 +43,7 @@ export default function CartModal({
               onClick={handleNavigate}
               className="w-full bg-black text-white h-10 font-bold"
             >
-              THANH TOÁN
+              TỚI GIỎ HÀNG
             </button>
           </div>
         </div>

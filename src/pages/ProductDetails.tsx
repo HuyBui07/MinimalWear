@@ -3,10 +3,6 @@ import { useParams } from "react-router-dom";
 
 // redux
 import { useDispatch } from "react-redux";
-import { addItem } from "../redux/slices/cartSlice";
-
-// images
-import product from "../assets/product-demo.png";
 
 // utils
 import { getBackgroundColor, formatPrice } from "../utils";

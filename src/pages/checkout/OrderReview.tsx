@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
 
+import { useNavigate } from "react-router-dom";
+
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import { setPayment } from "../../redux/slices/orderSlice";
+
 // images
 import productPic from "../../assets/product-demo.png";
 
@@ -9,86 +15,26 @@ import { formatPrice } from "../../utils";
 import { FaCheck } from "react-icons/fa";
 
 export default function OrderReview() {
-  const [cart, setCart] = useState([
-    {
-      id: "1",
-      name: "Áo thun nam",
-      price: 100000,
-      color: "Black",
-      size: "M",
-      quantity: 1,
-    },
-    {
-      id: "2",
-      name: "Áo thun nam",
-      price: 100000,
-      color: "Black",
-      size: "M",
-      quantity: 1,
-    },
-    {
-      id: "3",
-      name: "Áo thun nam",
-      price: 100000,
-      color: "Black",
-      size: "M",
-      quantity: 1,
-    },
-  ]);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const order = useSelector((state: RootState) => state.order.order);
+  const cart = order?.products;
+  const deliveryPrice = order?.delivery == "standard" ? 30000 : 50000;
+
   const [totalPrice, setTotalPrice] = useState(0);
-  const [selectedDelivery, setSelectedDelivery] = useState("standard");
 
   useEffect(() => {
-    const totalPrice = cart.reduce(
-      (total, product) => total + product.price * product.quantity,
-      0
-    );
-    setTotalPrice(totalPrice);
+    const totalPrice =
+      cart?.reduce(
+        (total, product) => total + product.price * product.quantity,
+        0
+      ) || 0;
+    setTotalPrice(totalPrice + deliveryPrice);
   }, [cart]);
 
-  const propProductList = [
-    {
-      id: "1",
-      name: "Áo thun nam",
-      price: 100000,
-      color: "Black",
-      size: "M",
-    },
-    {
-      id: "2",
-      name: "Áo thun nam",
-      price: 100000,
-      color: "Black",
-      size: "M",
-    },
-    {
-      id: "3",
-      name: "Áo thun nam",
-      price: 100000,
-      color: "Black",
-      size: "M",
-    },
-  ];
-
-  const handleRemoveProduct = (id: string) => {
-    setCart(cart.filter((product) => product.id !== id));
-  };
-
-  const handleQuantityChange = (id: string, quantity: number) => {
-    setCart(
-      cart.map((product) =>
-        product.id === id ? { ...product, quantity } : product
-      )
-    );
-  };
-
-  const getQuantity = (id: string) => {
-    const product = cart.find((product) => product.id === id);
-    return product?.quantity || 1;
-  };
-
   return (
-    <div className="w-full px-36 p-10 mb-10">
+    <div className="w-full px-36 p-10">
       <h3 className="font-bold mb-10">THANH TOÁN</h3>
 
       <div className="flex flex-row w-full gap-10">
@@ -110,11 +56,11 @@ export default function OrderReview() {
 
             <p className="font-bold text-xl mx-5">SẢN PHẨM ĐẶT HÀNG</p>
             <div className="flex flex-col w-full p-5">
-              {cart.map((product, index) => (
+              {cart?.map((product, index) => (
                 <>
                   <div className="flex flex-row mb-6">
                     <img
-                      src={productPic}
+                      src={product.image || productPic}
                       alt="product"
                       className="w-52 h-64 mr-5"
                     />
@@ -125,7 +71,7 @@ export default function OrderReview() {
                       <p>Số lượng: {product.quantity}</p>
                     </div>
                   </div>
-                  {index !== propProductList.length - 1 && (
+                  {index !== cart?.length - 1 && (
                     <div className="h-[2px] w-full bg-gray-100 mb-6"></div>
                   )}
                 </>
@@ -134,24 +80,7 @@ export default function OrderReview() {
 
             <div className="h-[2px] w-full bg-gray-100 mb-6"></div>
 
-            <div className="flex flex-row justify-between px-5">
-              <p className="font-bold text-xl">Tổng</p>
-              <p className="font-bold text-xl">
-                {formatPrice(totalPrice + 30000)}
-              </p>
-            </div>
-
-            <div className="flex flex-row justify-between px-5 mt-2">
-              <p className=" text-lg">Tổng cộng</p>
-              <p className=" text-lg">{formatPrice(totalPrice)}</p>
-            </div>
-
-            <div className="flex flex-row justify-between px-5 mt-2">
-              <p className=" text-lg">Phí vận chuyển</p>
-              <p className=" text-lg">{formatPrice(30000)}</p>
-            </div>
-
-            <div className="flex items-center px-5 mt-8">
+            <div className="flex items-center px-5 ">
               <input
                 type="checkbox"
                 id="invoiceCheckbox"
@@ -175,17 +104,21 @@ export default function OrderReview() {
           </div>
         </div>
 
-        <div className="flex flex-col w-1/3 h-fit sticky top-40">
+        <div className="flex flex-col w-1/3 h-fit sticky top-44">
           <div className="flex flex-col w-full border py-10 px-5">
             <p className="font-bold text-lg mb-10">
-              TỔNG ĐƠN HÀNG| {propProductList.length} SẢN PHẨM
+              TỔNG ĐƠN HÀNG| {cart?.length} SẢN PHẨM
             </p>
-            {cart.map((item) => (
+            {cart?.map((item) => (
               <div className="flex flex-row justify-between">
                 <p>- {item.name}</p>
                 <p>{formatPrice(item.price * item.quantity)}</p>
               </div>
             ))}
+            <div className="flex flex-row justify-between">
+              <p>- Phí vận chuyển</p>
+              <p>{formatPrice(deliveryPrice)}</p>
+            </div>
             <div className="flex flex-row justify-between mt-2">
               <p className="font-bold text-xl">Tổng cộng</p>
               <p className="font-bold text-xl">{formatPrice(totalPrice)}</p>

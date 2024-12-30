@@ -1,11 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+
+// redux
+import { useSelector, useDispatch } from "react-redux";
+import { updateUserInfo } from "../../redux/slices/userSlice";
 import { RootState } from "../../redux/store";
+import { API_CONST } from "../../constants";
 
 export default function EditMember() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [isEmailPasswordChange, setIsEmailPasswordChange] = useState(false);
+  const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -13,6 +20,65 @@ export default function EditMember() {
   };
 
   const user = useSelector((state: RootState) => state.user.user);
+  const [newEmail, setNewEmail] = useState(user?.email);
+  const [phone, setPhone] = useState(user?.phone);
+  const [address, setAddress] = useState(user?.address);
+
+  const [error, setError] = useState("");
+
+  const handleChangeInformation = async () => {
+    let body: any = {
+      phone: phone,
+      address: address,
+    };
+
+    if (isEmailPasswordChange) {
+      if (newEmail !== user?.email) {
+        body = {
+          ...body,
+          email: newEmail,
+        };
+      }
+
+      if (oldPassword && newPassword) {
+        body = {
+          ...body,
+          oldPassword: oldPassword,
+          password: newPassword,
+        };
+      }
+    }
+
+    try {
+      const response = await fetch(API_CONST + "/user/update-user", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message);
+      }
+
+      if (response.ok) {
+        dispatch(
+          updateUserInfo({
+            email: newEmail,
+            phone: phone,
+            address: address,
+          })
+        );
+        navigate("/member");
+      }
+    } catch (error: any) {
+      setError(error.message);
+      console.error(error);
+    }
+  };
 
   return (
     <div className="w-full px-36 p-10">
@@ -40,18 +106,32 @@ export default function EditMember() {
                   <input
                     type="email"
                     className="bg-gray-200 border-b-2 border-gray-400 ml-4 p-2 w-4/5 text-black"
-                    value={user?.email}
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
                   />
                 </div>
 
                 <div className="flex flex-row w-full justify-between items-center mb-8">
-                  <p className="font-bold">MẬT KHẨU</p>
+                  <p className="font-bold">MẬT KHẨU CŨ</p>
+                  <input
+                    type="password"
+                    className="bg-gray-200 border-b-2 border-gray-400 ml-4 p-2 w-4/5 text-black"
+                    value={oldPassword}
+                    onChange={(e) => setOldPassword(e.target.value)}
+                  />
+                </div>
+
+                <div className="flex flex-row w-full justify-between items-center mb-8">
+                  <p className="font-bold">MẬT KHẨU MỚI</p>
                   <input
                     type="password"
                     className="bg-gray-200 border-b-2 border-gray-400 ml-4 p-2 w-4/5 text-black"
                     value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
                   />
                 </div>
+
+                {error && <p className="text-red-500 mt-2">{error}</p>}
               </>
             ) : (
               <div className="flex flex-row w-full justify-between items-center mb-6">
@@ -79,7 +159,8 @@ export default function EditMember() {
               <input
                 type="email"
                 className="bg-gray-200 border-b-2 border-gray-400 ml-4 p-2 w-4/5 text-black"
-                value={user?.phone}
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
               />
             </div>
 
@@ -88,11 +169,15 @@ export default function EditMember() {
               <input
                 type="email"
                 className="bg-gray-200 border-b-2 border-gray-400 ml-4 p-2 w-4/5 text-black"
-                value={user?.address}
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
               />
             </div>
 
-            <button className="w-72 bg-black text-white h-10 font-bold">
+            <button
+              className="w-72 bg-black text-white h-10 font-bold"
+              onClick={handleChangeInformation}
+            >
               LƯU THAY ĐỔI
             </button>
           </div>

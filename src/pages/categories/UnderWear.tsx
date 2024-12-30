@@ -20,7 +20,7 @@ function UnderWear() {
       let endpoint =
         "/product/get-all?page=" +
         page +
-        "&filter=undererwear" +
+        "&filter=underwear" +
         "&sort=" +
         sortBy;
 

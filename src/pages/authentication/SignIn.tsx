@@ -38,7 +38,7 @@ export default function SignIn() {
         },
         body: JSON.stringify({
           email: "testmail1@gmail.com",
-          password: "kocho112233",
+          password: "1234567",
         }),
       }).then(async (response: any) => {
         const data = await response.json();
