@@ -8,6 +8,7 @@ export default {
       },
       colors: {
         postcl: "#D9D9D9",
+        brown: "#A0522D",
       },
       letterSpacing: {
         extrawide: "0.2rem",

@@ -32,6 +32,20 @@ function UnderWear() {
     fetchUnderwears();
   }, [page]);
 
+  // Get total pages
+  const [totalPages, setTotalPages] = useState(0);
+  useEffect(() => {
+    const fetchTotalPages = async () => {
+      let endpoint = "/product/get-total-pages?limitItem=8&filter=underwear";
+      await fetch(API_CONST + endpoint).then(async (response: any) => {
+        const data = await response.json();
+        setTotalPages(data.totalPage);
+      });
+    };
+    fetchTotalPages();
+  }, []);
+
+
   return (
     <div className="flex flex-col w-full mt-10 space-y-7 px-36 mb-10">
       <SortingBar
@@ -39,6 +53,7 @@ function UnderWear() {
         setPage={setPage}
         sortBy={sortBy}
         setSortBy={setSortBy}
+        totalPages={totalPages}
       />
       <div className="grid grid-cols-4 w-full justify-items-center gap-x-16 gap-y-10">
         {products.length != 0 &&

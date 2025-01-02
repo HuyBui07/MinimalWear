@@ -72,12 +72,7 @@ function Header() {
             </div>
 
             <div className="flex flex-row flex-grow justify-center space-x-16">
-              <a
-                href="#"
-                className="font-semibold text-2xl hover:underline cursor-pointer"
-              >
-                Hot
-              </a>
+
               <a
                 onClick={() => navigate("/upperwear")}
                 className="font-semibold text-2xl hover:underline cursor-pointer"

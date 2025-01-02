@@ -12,6 +12,8 @@ export function getBackgroundColor(color: string) {
       return "bg-gray-100";
     case "gray":
       return "bg-gray-300";
+    case "brown":
+      return "bg-brown";
     default:
       return "bg-gray-500";
   }

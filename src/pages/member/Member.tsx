@@ -7,6 +7,11 @@ export default function Member() {
 
   const user = useSelector((state: RootState) => state.user.user);
 
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    navigate("/signin");
+  };
+
   return (
     <div className="w-full px-36 p-10 mb-10">
       <h3 className="font-bold mb-10">CÀI ĐẶT TÀI KHOẢN</h3>
@@ -14,11 +19,23 @@ export default function Member() {
         <div className="w-1/3">
           <p className="mb-5 font-bold hover:underline cursor-pointer">Hồ sơ</p>
           <p
-            className="hover:underline cursor-pointer"
+            className="mb-5 hover:underline cursor-pointer"
             onClick={() => navigate("/member/edit")}
           >
             Chỉnh sửa hồ sơ
           </p>
+          <p
+            className="mb-5 hover:underline cursor-pointer"
+            onClick={() => navigate("/member/my-orders")}
+          >
+            Đơn hàng của tôi
+          </p>
+          <p
+              className="mb-5 hover:underline cursor-pointer"
+              onClick={handleLogout}
+            >
+              Đăng xuất
+            </p>
         </div>
 
         <div className="flex flex-col border-2 px-16 py-12 w-full">

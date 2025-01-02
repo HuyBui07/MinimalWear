@@ -17,6 +17,7 @@ export default function Delivery() {
   const navigate = useNavigate();
 
   const user = useSelector((state: RootState) => state.user.user);
+  const userPhone = user?.phone;
   const [userAddress, setUserAddress] = useState(user?.address);
   const cart = useSelector((state: RootState) => state.order.order?.products);
   const [totalPrice, setTotalPrice] = useState(0);
@@ -34,7 +35,7 @@ export default function Delivery() {
   }, [cart]);
 
   const handleNextStep = () => {
-    if (userAddress == "NA") {
+    if (userAddress == "NA" || userPhone == "NA") {
       navigate("/member/edit");
       return;
     }
@@ -94,23 +95,28 @@ export default function Delivery() {
               </div>
 
               <div className="h-[2px] w-full bg-gray-100 my-6"></div>
-              {userAddress == "NA" ? (
+              {userAddress == "NA" || userPhone == "NA" ? (
                 <p className="mb-5 flex items-center">
                   <FaExclamationTriangle className="mr-2" />
-                  Bạn chưa đăng ký địa chỉ
+                  Bạn chưa đăng ký đầy đủ thông tin
                 </p>
               ) : (
-                <p className="mb-5 flex items-center">
-                  Địa chỉ đăng ký: {userAddress}
-                </p>
+                <>
+                  <p className="mb-2 flex items-center">
+                    Địa chỉ đăng ký: {userAddress}
+                  </p>
+                  <p className="mb-5 flex items-center">
+                    Số điện thoại: {userPhone}
+                  </p>
+                </>
               )}
 
               <button
                 className="w-fit px-10 h-12 font-semibold text-lg tracking-widest border-black border rounded-none hover:opacity-70"
                 onClick={handleNextStep}
               >
-                {userAddress == "NA"
-                  ? "ĐĂNG KÝ ĐỊA CHỈ MỚI"
+                {userAddress == "NA" || userPhone == "NA"
+                  ? "ĐĂNG KÝ THÔNG TIN"
                   : "CHỌN PHƯƠNG THỨC THANH TOÁN"}
               </button>
             </div>
@@ -132,7 +138,9 @@ export default function Delivery() {
             </p>
             {cart?.map((item) => (
               <div className="flex flex-row justify-between">
-                <p>- {item.quantity} {item.name}</p>
+                <p>
+                  - {item.quantity} {item.name}
+                </p>
                 <p>{formatPrice(item.price * item.quantity)}</p>
               </div>
             ))}

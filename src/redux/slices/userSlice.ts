@@ -32,13 +32,26 @@ const userSlice = createSlice({
         );
       }
     },
-     setCartSize: (state, action) => {
-    if (state.user) {
-      state.user.cartSize = action.payload;
-     }
+    setCartSize: (state, action) => {
+      if (state.user) {
+        state.user.cartSize = action.payload;
+      }
+    },
+    increaseCartSize: (state) => {
+      if (state.user) {
+        state.user.cartSize++;
+      }
     },
   },
 });
 
-export const { setUser, deleteUser, updateUserInfo, addFavorite, removeFavorite, setCartSize } = userSlice.actions;
+export const {
+  setUser,
+  deleteUser,
+  updateUserInfo,
+  addFavorite,
+  removeFavorite,
+  setCartSize,
+  increaseCartSize,
+} = userSlice.actions;
 export default userSlice.reducer;

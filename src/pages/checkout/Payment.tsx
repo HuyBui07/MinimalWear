@@ -32,9 +32,9 @@ export default function Payment() {
   }, [cart]);
 
   const handleNextStep = () => {
-      navigate("/checkout/orderreview");
-      dispatch(setPayment(selectedPayment));
-    };
+    navigate("/checkout/orderreview");
+    dispatch(setPayment(selectedPayment));
+  };
 
   return (
     <div className="w-full px-36 p-10 mb-10">
@@ -83,7 +83,7 @@ export default function Payment() {
 
               <button
                 className="w-80 h-12 font-semibold text-xl tracking-widest bg-black text-white rounded-none hover:opacity-70 mt-2 mb-5"
-                onClick={() => navigate("/checkout/orderreview")}
+                onClick={handleNextStep}
               >
                 TIẾP TỤC
               </button>
@@ -102,7 +102,9 @@ export default function Payment() {
             </p>
             {cart?.map((item) => (
               <div className="flex flex-row justify-between">
-                <p>- {item.quantity} {item.name}</p>
+                <p>
+                  - {item.quantity} {item.name}
+                </p>
                 <p>{formatPrice(item.price * item.quantity)}</p>
               </div>
             ))}

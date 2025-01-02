@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { removeFavorite } from "../redux/slices/userSlice";
-
-// images
-import productPic from "../assets/product-demo.png";
+import { useNavigate } from "react-router-dom";
 
 // utils
 import { formatPrice } from "../utils";
@@ -25,6 +23,7 @@ type FavoriteProduct = {
 
 export default function Wishlist() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [favorites, setFavorites] = useState<FavoriteProduct[]>();
 
   useEffect(() => {
@@ -83,13 +82,15 @@ export default function Wishlist() {
       <div className="flex flex-col border-2 px-5 py-5 w-full">
         <p>{favorites?.length} Sản phẩm</p>
 
-        <div className="flex flex-col mt-5">
+        <div className="flex flex-col mt-5 cursor-pointer">
           {favorites?.map((product, index) => (
             <>
-              <div className="flex flex-row mb-6">
+              <div className="flex flex-row mb-6" onClick={() => {
+                navigate(`/products/${product.productId}`);
+              }}> 
                 <div className="relative">
                   <img
-                    src={productPic}
+                    src={product.image}
                     alt="product"
                     className="w-52 h-64 mr-5"
                   />

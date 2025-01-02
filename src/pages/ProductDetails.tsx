@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 
 // redux
 import { useDispatch } from "react-redux";
+import { increaseCartSize } from "../redux/slices/userSlice";
 
 // utils
 import { getBackgroundColor, formatPrice } from "../utils";
@@ -94,6 +95,7 @@ export default function ProductDetails() {
 
       if (response.ok) {
         setIsCartModalOpen(true);
+        dispatch(increaseCartSize());
       }
     } catch (error) {
       console.error("There was a problem with your fetch operation:", error);

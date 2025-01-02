@@ -56,85 +56,24 @@ const NextArrow = (props: ArrowProps) => {
 };
 
 function Home() {
-  const [products, setProducts] = useState<ProductPageItem[]>([
-    {
-      _id: "1",
-      image: product,
-      name: "Grateful Oversized Tee",
-      price: 100000,
-    },
-    {
-      _id: "2",
-      image: product,
-      name: "Grateful Oversized Tee",
-      price: 100000,
-    },
-    {
-      _id: "3",
-      image: product,
-      name: "Grateful Oversized Tee",
-      price: 100000,
-    },
-    {
-      _id: "4",
-      image: product,
-      name: "Grateful Oversized Tee",
-      price: 100000,
-    },
-    {
-      _id: "5",
-      image: product,
-      name: "Grateful Oversized Tee",
-      price: 100000,
-    },
-    {
-      _id: "6",
-      image: product,
-      name: "Grateful Oversized Tee",
-      price: 100000,
-    },
-    {
-      _id: "7",
-      image: product,
-      name: "Grateful Oversized Tee",
-      price: 100000,
-    },
-    {
-      _id: "8",
-      image: product,
-      name: "Grateful Oversized Tee",
-      price: 100000,
-    },
-    {
-      _id: "9",
-      image: product,
-      name: "Grateful Oversized Tee",
-      price: 100000,
-    },
-    {
-      _id: "10",
-      image: product,
-      name: "Grateful Oversized Tee",
-      price: 100000,
-    },
-  ]);
+  const [products, setProducts] = useState<ProductPageItem[]>([]);
 
-  // useEffect(() => {
-  //   const fetchHotProducts = async () => {
-  //     try {
-  //       let endpoint = "/product/get-all?page=1" + "&sort=best-seller";
-  //       const response = await fetch(API_CONST + endpoint);
-  //       if (!response.ok) {
-  //         throw new Error("Failed to fetch products");
-  //       }
-  //       const data = await response.json();
-  //       setProducts(data.data);
-  //     } catch (error) {
-  //       console.error("Error fetching hot products:", error);
-  //     }
-  //   };
-  //   fetchHotProducts();
-  // }, []);
+  useEffect(() => {
+    const fetchHotProducts = async () => {
+      try {
+        let endpoint = "/product/get-all?page=1" + "&sort=best-seller";
+        const response = await fetch(API_CONST + endpoint);
+        if (!response.ok) {
+          throw new Error("Failed to fetch products");
+        }
+        const data = await response.json();
+        setProducts(data.data);
+      } catch (error) {
+        console.error("Error fetching hot products:", error);
+      }
+    };
+    fetchHotProducts();
+  }, []);
 
   const settings = {
     arrows: true,

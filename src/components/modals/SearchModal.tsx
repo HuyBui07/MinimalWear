@@ -94,7 +94,7 @@ export default function SearchModal({
             {products.map((product, index) => {
               if (products.length === index + 1) {
                 return (
-                  <div ref={lastProductElementRef} key={index}>
+                  <div ref={lastProductElementRef} key={index} onClick={() => setSearchModeOn(false)}>
                     <Product
                       key={index}
                       productId={product._id}

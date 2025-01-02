@@ -82,7 +82,7 @@ function Product({ productId, image, productName, price }: ProductProps) {
         onClick={handleFavorite}
         className="absolute top-4 right-4 text-black"
       >
-        {isFavorite ? <FaHeart size={24} /> : <FaRegHeart size={24} />}
+        {isFavorite ? <FaHeart size={24} className="bg-transparent"/> : <FaRegHeart size={24} className="bg-transparent"/>}
       </button>
 
       <span className="mt-3 text-lg font-medium w-fit">{productName}</span>

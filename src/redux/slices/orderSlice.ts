@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 type Order = {
-  date: string;
   delivery: string;
   address?: string;
   payment?: string;
@@ -27,7 +26,6 @@ const orderSlice = createSlice({
     addOrder: (state, action) => {
       if (!state.order) {
         state.order = {
-          date: new Date().toISOString(),
           delivery: "standard",
           products: action.payload,
         };
@@ -41,18 +39,23 @@ const orderSlice = createSlice({
         state.order.delivery = action.payload;
       }
     },
+    resetOrder: (state) => {
+      state.order = null;
+    },
     setAddress: (state, action) => {
-        if (state.order) {
-            state.order.address = action.payload;
-        }
+      if (state.order) {
+        state.order.address = action.payload;
+      }
     },
     setPayment: (state, action) => {
-        if (state.order) {
-            state.order.payment = action.payload;
-        }
+      if (state.order) {
+        state.order.payment = action.payload;
+      }
     }
+
   },
 });
 
-export const { addOrder, setDelivery, setAddress, setPayment } = orderSlice.actions;
+export const { addOrder, setDelivery, resetOrder, setAddress, setPayment} =
+  orderSlice.actions;
 export default orderSlice.reducer;

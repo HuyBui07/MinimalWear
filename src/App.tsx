@@ -22,6 +22,7 @@ import UnderWear from "./pages/categories/UnderWear";
 import ProductDetails from "./pages/ProductDetails";
 import Member from "./pages/member/Member";
 import EditMember from "./pages/member/EditMember";
+import MyOrders from "./pages/member/MyOrders";
 import Cart from "./pages/Cart";
 import Wishlist from "./pages/Wishlist";
 import Delivery from "./pages/checkout/Delivery";
@@ -51,6 +52,7 @@ function App() {
           <Route path="/products/:productId" element={<ProductDetails />} />
           <Route path="/member" element={<Member />} />
           <Route path="/member/edit" element={<EditMember />} />
+          <Route path="/member/my-orders" element={<MyOrders />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/checkout/delivery" element={<Delivery />} />

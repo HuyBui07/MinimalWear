@@ -6,7 +6,7 @@ import LeftArrow from "../../assets/left-chevron.png";
 
 function SortingBar(props: any) {
   // props
-  const { page, setPage, sortBy, setSortBy } = props;
+  const { page, setPage, sortBy, setSortBy, totalPages } = props;
 
   return (
     <div className="flex flex-row justify-between items-center px-12 py-4 bg-[#D9D9D9] bg-opacity-[0.2] rounded">
@@ -69,21 +69,21 @@ function SortingBar(props: any) {
 
       <div className="flex flex-row space-x-5 items-center justify-center">
         <p>
-          <span className="font-bold">{page}</span>/10
+          <span className="font-bold">{page}</span>/{totalPages}
         </p>
 
         <div className="flex flex-row">
           <button
             onClick={() => setPage(page - 1)}
             disabled={page === 1}
-            className="h-11 w-11 bg-[#d9d9d9] border-2 flex items-center justify-center rounded-md border-black border-opacity-20"
+            className={'h-11 w-11 bg-[#d9d9d9] border-2 flex items-center justify-center rounded-md border-black border-opacity-20' + (page === 1 ? ' opacity-50' : '')}
           >
             <img src={LeftArrow} className="h-4 w-4" />
           </button>
           <button
             onClick={() => setPage(page + 1)}
-            disabled={page === 10}
-            className="h-11 w-11 bg-[#d9d9d9] border-2 flex items-center justify-center rounded-md border-black border-opacity-20"
+            disabled={page === totalPages}
+            className={'h-11 w-11 bg-[#d9d9d9] border-2 flex items-center justify-center rounded-md border-black border-opacity-20' + (page === totalPages ? ' opacity-50' : '')}
           >
             <img src={RightArrow} className="h-4 w-4" />
           </button>

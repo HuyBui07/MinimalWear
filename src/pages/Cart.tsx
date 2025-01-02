@@ -173,6 +173,11 @@ export default function Cart() {
 
         <div className="flex flex-row w-full gap-10">
           <div className="flex flex-col w-2/3">
+            {cart.length === 0 && (
+              <p className="text-gray-400">
+                Bạn chưa có sản phẩm nào trong giỏ hàng.
+              </p>
+            )}
             {cart.map((product, index) => (
               <>
                 <div className="flex flex-row mb-6">
