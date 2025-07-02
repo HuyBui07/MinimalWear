@@ -1,0 +1,1 @@
+export const API_CONST = "http://localhost:3001/api";

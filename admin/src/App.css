@@ -1,0 +1,23 @@
+#root {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+/* Define the keyframe animation */
+@keyframes slideInTop {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Apply the animation to the modal container */
+.slide-in-top {
+  animation: slideInTop 0.5s ease-out;
+}
+
