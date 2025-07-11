@@ -2,16 +2,24 @@ const ProductService = require("../services/ProductService");
 
 const createProduct = async (req, res) => {
   try {
-    const { name, type, price, description, material, producer, rating } = req.body;
-    let { variants } = req.body;
+    const { name, type, price, description, material } = req.body;
 
-    if (!name || !type || !price || !variants || !description || !material || !producer) {
+    let { variants } = req.body;
+    if (!name || !type || !price || !variants || !description || !material) {
       return res.status(400).json({
         status: "ERR",
         message: "The input is required",
       });
     }
 
+    if (req.files.length === 0) {
+      return res.status(400).json({
+        status: "ERR",
+        message: "The image is required",
+      });
+    }
+
+    // Parse the variants JSON string
     try {
       variants = JSON.parse(variants);
     } catch (error) {
@@ -22,10 +30,9 @@ const createProduct = async (req, res) => {
     }
 
     const response = await ProductService.createProduct(
-      { name, type, price, variants, description, material, producer, rating },
+      { name, type, price, variants, description, material },
       req.files
     );
-
     if (response.status === "ERR") {
       return res.status(400).json(response);
     }
@@ -41,68 +48,50 @@ const createProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     const ProductId = req.params.id;
-    let {
-      name,
-      type,
-      price,
-      description,
-      material,
-      producer,
-      variants,
-      removedImages, 
-    } = req.body;
+    const { name, type, price, description, material } = req.body;
+    let { variants } = req.body;
+    //console.log('data', data)
 
     if (!ProductId) {
-      return res.status(400).json({
+      return res.status(200).json({
         status: "ERR",
         message: "Product ID is required",
       });
     }
 
-    if (typeof variants === "string") {
-      try {
-        variants = JSON.parse(variants);
-      } catch (err) {
-        return res.status(400).json({
-          status: "ERR",
-          message: "Invalid variants format",
-        });
-      }
-    }
-
-    if (typeof removedImages === "string") {
-      try {
-        removedImages = JSON.parse(removedImages);
-      } catch (err) {
-        return res.status(400).json({
-          status: "ERR",
-          message: "Invalid removedImages format",
-        });
-      }
-    }
+    variants = JSON.parse(variants);
 
     const response = await ProductService.updateProduct(
       ProductId,
-      {
-        name,
-        type,
-        price,
-        description,
-        material,
-        producer,
-        variants,
-        removedImages,
-      },
-      req.files 
+      { name, type, price, variants, description, material },
+      req.files
     );
-
     return res.status(200).json(response);
   } catch (e) {
-    console.error("Update product error:", e);
-    return res.status(500).json({
-      status: "ERR",
-      message: "An error occurred",
+    console.log("error");
+    return res.status(404).json({
+      message: "Error occured",
       error: e.message,
+    });
+  }
+};
+
+const deleteProduct = async (req, res) => {
+  try {
+    const ProductId = req.params.id;
+
+    if (!ProductId) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "Product ID is required",
+      });
+    }
+    console.log("id", ProductId);
+    const response = await ProductService.deleteProduct(ProductId);
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e,
     });
   }
 };
@@ -117,7 +106,7 @@ const getDetailProduct = async (req, res) => {
         message: "Product ID is required",
       });
     }
-    // console.log("id", ProductId);
+    console.log("id", ProductId);
     const response = await ProductService.getDetailProduct(ProductId);
     return res.status(200).json(response);
   } catch (e) {
@@ -163,10 +152,12 @@ const getTotalPages = async (req, res) => {
   }
 };
 
-const adminAllProducts = async (req, res) => {
+//Admin controllers
+const getAllProductsAsAdmin = async (req, res) => {
   try {
     const { limitItem, page, sort, filter, searchQuery } = req.query;
-    const response = await ProductService.adminAllProducts(
+    // Parse filter as an array
+    const response = await ProductService.getAllProductsAsAdmin(
       Number(limitItem) || 8,
       Number(page) || 0,
       sort,
@@ -183,26 +174,30 @@ const adminAllProducts = async (req, res) => {
   }
 };
 
-const deleteProduct = async (req, res) => {
+const deleteImage = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { ids } = req.body; 
-
-    const productIds = ids || id;
-
-    if (!productIds || (Array.isArray(productIds) && productIds.length === 0)) {
-      return res.status(400).json({
-        status: "ERR",
-        message: "Product ID(s) is required",
-      });
-    }
-
-    const response = await ProductService.deleteProduct(productIds);
+    const { productId } = req.params;
+    const { imageId } = req.body;
+    const response = await ProductService.deleteImage(productId, imageId);
     return res.status(200).json(response);
-  } catch (error) {
-    return res.status(500).json({
-      status: "ERR",
-      message: error.message || "Failed to delete product(s)",
+  } catch (e) {
+    return res.status(404).json({
+      message: e.message,
+    });
+  }
+};
+
+const searchAsAdmin = async (req, res) => {
+  try {
+    const { query, option } = req.query;
+    // Parse filter as an array
+    const response = await ProductService.searchAsAdmin(query, option);
+    //console.log('lm', limitItem)
+    //console.log('pg', page)
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e.message,
     });
   }
 };
@@ -214,5 +209,7 @@ module.exports = {
   getDetailProduct,
   getAllProduct,
   getTotalPages,
-  adminAllProducts,
+  getAllProductsAsAdmin,
+  deleteImage,
+  searchAsAdmin,
 };

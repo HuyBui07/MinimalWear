@@ -19,11 +19,12 @@ import SecondPost from "../components/posts/SecondPost";
 import ThirdPost from "../components/posts/ThirdPost";
 
 // images
-import product from "../assets/product-demo.png";
+// import product from "../assets/product-demo.png";
 
 // components
 import Product from "../components/Product";
 import { ProductPageItem } from "../types/ProductPageItem";
+import SkeletonProduct from "../components/SkeletonProduct";
 
 interface ArrowProps {
   className?: string;
@@ -61,7 +62,7 @@ function Home() {
   useEffect(() => {
     const fetchHotProducts = async () => {
       try {
-        let endpoint = "/product/get-all?page=1" + "&sort=best-seller";
+        const endpoint = "/product/get-all?page=1" + "&sort=best-seller";
         const response = await fetch(API_CONST + endpoint);
         if (!response.ok) {
           throw new Error("Failed to fetch products");
@@ -110,7 +111,7 @@ function Home() {
           <h4 className="font-bold">Hot Sale</h4>
           <FaFire className="ml-2 text-black text-2xl" />
         </div>
-
+        {products.length > 0 ? (
         <Slider {...productRowSettings} centerMode>
           {products?.map((product, index) => (
             <div className="ml-2">
@@ -122,8 +123,11 @@ function Home() {
                 price={product.price}
               />
             </div>
-          ))}
-        </Slider>
+            ))}
+          </Slider>
+        ) : (
+          <SkeletonProduct />
+        )}
       </div>
     </div>
   );

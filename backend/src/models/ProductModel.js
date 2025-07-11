@@ -14,15 +14,14 @@ const variantSchema = new mongoose.Schema({
 const productSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, unique: true },
-    images: { type: [String], required: false }, // đường link ảnh
+    images: { type: [String], required: true }, //đường link ảnh
     type: { type: String, required: true },
     price: { type: Number, required: true },
-    producer: { type: String, required: true },
-    variants: [variantSchema],
-    rating: { type: Number, required: false, default: 0 },
+    variants: [variantSchema], //số lượng trong kho
+    rating: { type: Number, required: true, default: 0 },
     description: { type: String },
     material: { type: String },
-    sold: { type: Number, default: 0 },
+    sale: { type: Number, default: 0 },
   },
   {
     timestamps: true,

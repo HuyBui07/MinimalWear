@@ -2,12 +2,11 @@ const User = require("../models/UserModel");
 const Product = require("../models/ProductModel");
 const Order = require("../models/OrderModel");
 const bcrypt = require("bcrypt");
-const cloudinary = require("../cloudinary");
 const { generalAccessToken, generalRefreshToken } = require("./JwtService");
 
 const createUser = (newUser) => {
   return new Promise(async (resolve, reject) => {
-    const { email, password, phone, firstName, lastName } = newUser;
+    const { email, password, confirmPassword } = newUser;
 
     const checkUser = await User.findOne({
       email: email,
@@ -24,9 +23,7 @@ const createUser = (newUser) => {
       const createdUser = await User.create({
         email,
         password: hash,
-        phone,
-        firstName,
-        lastName,
+
       });
 
       const access_token = await generalAccessToken({
@@ -49,12 +46,11 @@ const createUser = (newUser) => {
           access_token,
           userInfo: {
             email: createdUser.email,
-            firstName: createdUser.firstName || "NA",
-            lastName: createdUser.lastName || "NA",
             phone: createdUser.phone || "NA",
+            address: createdUser.address || "NA",
             favorite: createdUser.favorite || [],
             cartSize: createdUser.cart.length || 0,
-          }
+          },
         });
       }
     } catch (e) {
@@ -63,52 +59,24 @@ const createUser = (newUser) => {
   });
 };
 
-const loginUser = ({ email, password, requireAdmin = false }) => {
+const loginUser = ({ email, password }) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log(`Login attempt for email: ${email}, requireAdmin: ${requireAdmin}`);
-      
-      const checkUser = await User.findOne({ email }).lean(); 
-      console.log(`User found:`, checkUser ? { 
-        id: checkUser._id, 
-        email: checkUser.email, 
-        isAdmin: checkUser.isAdmin,
-        isActive: checkUser.isActive 
-      } : null);
-
+      const checkUser = await User.findOne({ email });
       if (!checkUser) {
-        return reject({
-          status: 404,
-          message: "Incorrect email or password"
-        });
-      }
-
-      if (!checkUser.isActive) {
-        console.log('Account deactivated');
-        return reject({
-          status: 401,
-          message: "Account is deactivated, please contact support"
+        return resolve({
+          status: "ERR",
+          message: "User undefined",
         });
       }
 
       const comparePassword = bcrypt.compareSync(password, checkUser.password);
       if (!comparePassword) {
-        console.log('Password incorrect');
-        return reject({
-          status: 401,
-          message: "Incorrect email or password"
+        return resolve({
+          status: "ERR",
+          message: "Incorrect password",
         });
       }
-
-      if (requireAdmin && !checkUser.isAdmin) {
-        console.log(`Admin access denied. User isAdmin: ${checkUser.isAdmin}`);
-        return reject({
-          status: 403,
-          message: "Admin privilege is required"
-        });
-      }
-
-      console.log('Password verified, generating tokens...');
 
       const access_token = await generalAccessToken({
         id: checkUser._id,
@@ -120,139 +88,69 @@ const loginUser = ({ email, password, requireAdmin = false }) => {
         isAdmin: checkUser.isAdmin,
       });
 
-      console.log('Login successful');
-
       resolve({
         status: "OK",
-        message: requireAdmin ? "Admin login successful" : "Login successful",
+        message: "Login successful",
         access_token,
-        refresh_token,
         userInfo: {
-          _id: checkUser._id,
           email: checkUser.email,
-          firstName: checkUser.firstName,
-          lastName: checkUser.lastName,
-          img: checkUser.img || null,
-          phone: checkUser.phone || null,
+          phone: checkUser.phone || "NA",
+          address: checkUser.address || "NA",
           favorite: checkUser.favorite || [],
-          cartSize: checkUser.cart?.length || 0,
-          isAdmin: checkUser.isAdmin,
-          isActive: checkUser.isActive,
-          totalSpent: checkUser.totalSpent || 0,  
-          createdAt: checkUser.createdAt, 
+          cartSize: checkUser.cart.length || 0,
         },
       });
     } catch (e) {
-      console.error('Login service error:', e);
       reject(e);
     }
   });
 };
 
-const adminLoginUser = ({ email, password }) => {
-  console.log('Admin login service called');
-  return loginUser({ email, password, requireAdmin: true });
-};
+const updateUser = (id, data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const checkUser = await User.findOne({
+        _id: id,
+      });
 
-const uploadImageToCloudinary = (file) => {
-  return new Promise((resolve, reject) => {
-    if (!file?.buffer || !cloudinary?.uploader) {
-      return reject(new Error("Cloudinary config error or invalid file"));
-    }
-
-    const stream = cloudinary.uploader.upload_stream(
-      {
-        resource_type: "image",
-        folder: "user_avatars",
-        transformation: [{ width: 500, height: 500, crop: "limit" }],
-      },
-      (err, result) => {
-        if (err) return reject(new Error("Cloudinary upload failed: " + err.message));
-        resolve(result.secure_url);
+      if (checkUser === null) {
+        resolve({
+          status: "OK",
+          message: "The user is not defined!",
+        });
       }
-    );
 
-    stream.end(file.buffer);
+      console.log("data before change: ", data);
+      if (data.oldPassword) {
+        const comparePassword = bcrypt.compareSync(
+          data.oldPassword,
+          checkUser.password
+        );
+        if (!comparePassword) {
+          return resolve({
+            status: "ERR",
+            message: "Incorrect password",
+          });
+        }
+        delete data.oldPassword;
+        console.log("data: ", data);
+
+        const hash = bcrypt.hashSync(data.password, 10);
+        data.password = hash;
+      }
+
+      //console.log('b4 update')
+      await User.findByIdAndUpdate(id, data, { new: true });
+      //console.log('updatedUser here', updateUser)
+
+      resolve({
+        status: "OK",
+        message: "Success",
+      });
+    } catch (e) {
+      reject(e);
+    }
   });
-};
-
-const deleteImageFromCloudinary = (imageUrl) => {
-  return new Promise((resolve, reject) => {
-    if (!imageUrl) return resolve();
-
-    const publicId = imageUrl
-      .split('/')
-      .slice(-2)
-      .join('/')
-      .replace(/\.[^/.]+$/, ""); 
-
-    cloudinary.uploader.destroy(publicId, (err, result) => {
-      if (err) return reject(err);
-      resolve(result);
-    });
-  });
-};
-
-const updateUserById = async (id, data, file) => {
-  try {
-    const user = await User.findById(id);
-    if (!user) {
-      return { status: "ERR", message: "User not found" };
-    }
-
-    if (file) {
-      if (user.img) await deleteImageFromCloudinary(user.img);
-      data.img = await uploadImageToCloudinary(file);
-    }
-
-    const updatedUser = await User.findByIdAndUpdate(id, data, { new: true });
-
-    return {
-      status: "OK",
-      message: "User updated successfully",
-      data: updatedUser,
-    };
-  } catch (error) {
-    console.error("Update user error:", error);
-    return { status: "ERR", message: error.message };
-  }
-};
-
-const updateUser = (id, data, file) => updateUserById(id, data, file);
-const adminUpdateUser = (id, data, file) => updateUserById(id, data, file);
-
-const changePassword = async (id, oldPassword, newPassword) => {
-  try {
-    const user = await User.findById(id);
-    if (!user) {
-      return {
-        status: "ERR",
-        message: "User not found",
-      };
-    }
-
-    const match = bcrypt.compareSync(oldPassword, user.password);
-    if (!match) {
-      return {
-        status: "ERR",
-        message: "Incorrect old password",
-      };
-    }
-
-    const hashedPassword = bcrypt.hashSync(newPassword, 10);
-    user.password = hashedPassword;
-    await user.save();
-
-    return {
-      status: "OK",
-      message: "Password updated successfully",
-    };
-  } catch (error) {
-    return {
-      status: "ERR",
-      message: error.message,
-    };
-  }
 };
 
 const deleteUser = (id) => {
@@ -280,19 +178,14 @@ const deleteUser = (id) => {
   });
 };
 
-const getAllUser = (limitUser, page, excludeUserId = null) => {
+const getAllUser = (limitUser, page) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const query = excludeUserId ? { _id: { $ne: excludeUserId } } : {};
-      
-      const totalUser = await User.countDocuments(query);
-      // console.log("limitUser", limitUser);
-      // console.log("excludeUserId", excludeUserId);
-      
-      const allUser = await User.find(query)
+      const totalUser = await User.countDocuments();
+      console.log("limitUser", limitUser);
+      const allUser = await User.find()
         .limit(limitUser)
         .skip(page * limitUser);
-        
       resolve({
         status: "OK",
         message: "Get all user success",
@@ -322,7 +215,7 @@ const getDetailUser = (id) => {
 
       resolve({
         status: "OK",
-        message: "Get Detail user success",
+        message: "Get Detail User success",
         data: user,
       });
     } catch (e) {
@@ -427,78 +320,97 @@ const handleFavoriteAction = (action, userId, productId) => {
   });
 };
 
-const handleCartAction = async (action, userId, productId, color, size, quantity) => {
-  try {
-    const user = await User.findById(userId);
-    if (!user) {
-      return {
-        status: "ERR",
-        message: "User not found",
-      };
-    }
-
-    const cartItem = user.cart.find(
-      (item) =>
-        item.product.toString() === productId.toString() &&
-        item.color === color &&
-        item.size === size
-    );
-
-    switch (action) {
-      case "add":
-        if (cartItem) {
-          cartItem.quantity += quantity;
-        } else {
-          user.cart.push({ product: productId, color, size, quantity });
-        }
-        break;
-
-      case "remove":
-        if (!cartItem) {
-          return {
-            status: "ERR",
-            message: "Product not found in cart",
-          };
-        }
-        user.cart = user.cart.filter(
-          (item) =>
-            !(
-              item.product.toString() === productId.toString() &&
-              item.color === color &&
-              item.size === size
-            )
-        );
-        break;
-
-      case "update":
-        if (!cartItem) {
-          return {
-            status: "ERR",
-            message: "Product not found in cart",
-          };
-        }
-        cartItem.quantity = quantity;
-        break;
-
-      default:
-        return {
+const handleCartAction = (action, userId, productId, color, size, quantity) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await User.findOne({
+        _id: userId,
+      });
+      if (user === null) {
+        resolve({
           status: "ERR",
-          message: "Invalid action",
-        };
-    }
+          message: "The user is not defined!",
+        });
+      }
 
-    await user.save();
-    return {
-      status: "OK",
-      message: `${action} cart success`,
-      cart: user.cart,
-    };
-  } catch (error) {
-    return {
-      status: "ERR",
-      message: error.message,
-    };
-  }
+      if (action == "add") {
+        const checkProduct = user.cart.find(
+          (item) =>
+            item.product.toString() === productId.toString() &&
+            item.color === color &&
+            item.size === size
+        );
+
+        if (checkProduct !== undefined) {
+          checkProduct.quantity += quantity;
+          await user.save();
+
+          return resolve({
+            status: "OK",
+            message: "Add cart success",
+          });
+        }
+
+        user.cart.push({
+          product: productId,
+          color: color,
+          size: size,
+          quantity: quantity,
+        });
+        await user.save();
+
+        resolve({
+          status: "OK",
+          message: "Add cart success",
+        });
+      } else if (action == "remove") {
+        const checkProduct = user.cart.find(
+          (item) => item.product.toString() === productId
+        );
+
+        if (checkProduct === undefined) {
+          return resolve({
+            status: "ERR",
+            message: "The product is not in cart list!",
+          });
+        }
+
+        user.cart = user.cart.filter(
+          (item) => item.product.toString() !== productId
+        );
+        await user.save();
+
+        resolve({
+          status: "OK",
+          message: "Remove cart success",
+        });
+      } else {
+        const checkProduct = user.cart.find(
+          (item) =>
+            item.product.toString() === productId.toString() &&
+            item.color === color &&
+            item.size === size
+        );
+
+        if (checkProduct === undefined) {
+          return resolve({
+            status: "ERR",
+            message: "The product is not in cart list!",
+          });
+        }
+
+        checkProduct.quantity = quantity;
+        await user.save();
+
+        resolve({
+          status: "OK",
+          message: "Update cart success",
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
 };
 
 const getUserCart = (userId) => {
@@ -610,11 +522,7 @@ const getDashboard = () => {
 module.exports = {
   createUser,
   loginUser,
-  adminLoginUser,
-  updateUserById,
   updateUser,
-  adminUpdateUser,
-  changePassword,
   deleteUser,
   getAllUser,
   getDetailUser,

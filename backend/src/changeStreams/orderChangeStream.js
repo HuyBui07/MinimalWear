@@ -23,7 +23,7 @@ const handleOrderStatusChange = async (change) => {
       );
       sizeVariant.stock -= quantity;
 
-      productDoc.sold += 1;
+      productDoc.sale += 1;
       await productDoc.save();
 
       const date = new Date(order.createdAt).toLocaleDateString();

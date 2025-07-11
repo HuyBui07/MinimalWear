@@ -2,10 +2,6 @@ const mongoose = require("mongoose");
 
 const orderSchema = new mongoose.Schema(
   {
-    recipient: {
-      type: String,
-      required: true,
-    },
     delivery: {
       type: String,
       required: true,
@@ -25,16 +21,18 @@ const orderSchema = new mongoose.Schema(
           ref: "Product",
           required: true,
         },
-        color: { type: String, required: true },
-        size: { type: String, required: true },
-        quantity: { type: Number, required: true },
-        name: { type: String, required: true },
-        price: { type: Number, required: true },
-        image: { type: String, required: false },
-        type: { type: String, required: true },
-        producer: { type: String, required: true },
-        material: { type: String, required: false },
-        description: { type: String, required: false },
+        color: {
+          type: String,
+          required: true,
+        },
+        size: {
+          type: String,
+          required: true,
+        },
+        quantity: {
+          type: Number,
+          required: true,
+        },
       },
     ],
     status: {
@@ -50,13 +48,10 @@ const orderSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    note: {
-      type: String,
-      required: false,
-    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
-
 const Order = mongoose.model("Order", orderSchema);
 module.exports = Order;

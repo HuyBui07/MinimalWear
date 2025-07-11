@@ -58,10 +58,14 @@ export default function SignUp() {
           navigate("/");
         }
       });
-    } catch (error: any) {
-      // If there is an error, log the error
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("An unknown error occurred");
+      }
+    } finally {
       setLoading(false);
-      setError(error.message);
     }
   };
 
@@ -122,6 +126,7 @@ export default function SignUp() {
                 setConfirmPassword(e.target.value);
               }}
             ></input>
+
             {error && <p className="text-red-500">{error}</p>}
             <button
               className="bg-black text-white rounded-3xl h-9 mt-5 w-1/3 mx-auto"
