@@ -6,7 +6,7 @@ const authMiddleware = (req, res, next) => {
   //console.log('checktoken', req.headers.token)
   const token = req.headers.token.split(" ")[1];
 
-  jwt.verify(token, process.env.ACCESS_TOKEN, function (err, user) {
+  jwt.verify(token, process.env.ACCESS_TOKEN_KEY, function (err, user) {
     if (err) {
       return res.status(404).json({
         message: "The authentication1",
@@ -39,7 +39,7 @@ const authUserMiddleware = (req, res, next) => {
 
   const token = authHeader.split(" ")[1];
 
-  jwt.verify(token, process.env.ACCESS_TOKEN, function (err, user) {
+  jwt.verify(token, process.env.ACCESS_TOKEN_KEY, function (err, user) {
     if (err) {
       return res.status(403).json({
         message: "Invalid or expired token",

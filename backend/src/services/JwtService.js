@@ -1,6 +1,4 @@
 const jwt = require('jsonwebtoken')
-const dotenv = require('dotenv');
-dotenv.config()
 
 //gpt
 //Access_token là một mã ngắn hạn giúp người dùng không phải đăng nhập lại liên tục.
@@ -9,7 +7,7 @@ dotenv.config()
 const generalAccessToken = async (payload) => {
     const access_token = jwt.sign({
         payload
-    }, process.env.ACCESS_TOKEN, { expiresIn: '24h' })
+    }, process.env.ACCESS_TOKEN_KEY, { expiresIn: '24h' })
 
     return access_token
 }
@@ -17,7 +15,7 @@ const generalAccessToken = async (payload) => {
 const generalRefreshToken = async (payload) => {
     const refresh_token = jwt.sign({
         payload
-    }, process.env.REFRESH_TOKEN, { expiresIn: '7d' })
+    }, process.env.REFRESH_TOKEN_KEY, { expiresIn: '7d' })
 
     return refresh_token
 }
@@ -26,7 +24,7 @@ const refreshTokenJwtService = (token) => {
     return new Promise((resolve, reject) => {
         try{
             console.log('token', token)
-            jwt.verify(token, process.env.REFRESH_TOKEN, async (err, user) => {
+            jwt.verify(token, process.env.REFRESH_TOKEN_KEY, async (err, user) => {
                 if (err)
                 {
                     resolve({

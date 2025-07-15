@@ -7,6 +7,10 @@ import { API_CONST } from "../../constants";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/slices/userSlice";
 import LoadingScreen from "../../components/LoadingScreen";
+import MotionSlider from "../../components/MotionSlider";
+
+import logo from "../../assets/men.png";
+import google from "../../assets/google.png";
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -45,7 +49,7 @@ export default function SignIn() {
           email: email,
           password: password,
         }),
-      }).then(async (response: any) => {
+      }).then(async (response: Response) => {
         const data = await response.json();
         if (!response.ok) {
           setLoading(false);
@@ -59,12 +63,13 @@ export default function SignIn() {
           navigate("/");
         }
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       // If there is an error, log the error
-      await error.json();
-      setLoading(false);
-      setError(error.message);
-      console.error(error.message);
+      if (error instanceof Error) {
+        setLoading(false);
+        setError(error.message);
+      }
+      console.error(error);
     }
   };
 
@@ -79,22 +84,23 @@ export default function SignIn() {
         </div>
 
         <div className="flex flex-row w-full h-full">
-          <div className="flex w-2/5 bg-[#D9D9D9] items-center justify-center">
-            <div className="w-2/3">
-              <div className="flex flex-col w-fit gap-7">
-                <p className="font-normal text-2xl">Welcome!</p>
-                <p className="font-bold text-3xl">Sign in to your account</p>
-                <p
-                  onClick={handleSignUpClick}
-                  className="text-black hover:underline font-normal text-base cursor-pointer"
-                >
-                  Do not have an account? Click here
-                </p>
-              </div>
+          <div className="flex flex-col w-2/5 h-full bg-[#D9D9D9] items-center justify-center">
+            <MotionSlider />
+
+            <div className="flex flex-col w-fit gap-7 mt-20">
+              <p className="font-normal text-2xl">Welcome!</p>
+              <p className="font-bold text-3xl">Sign in to your account</p>
+              <p
+                onClick={handleSignUpClick}
+                className="text-black hover:underline font-normal text-base cursor-pointer"
+              >
+                Do not have an account? Click here
+              </p>
             </div>
           </div>
 
-          <div className="flex flex-col w-2/5 m-auto">
+          <div className="flex flex-col w-2/5 m-auto px-20">
+            <img src={logo} alt="logo" className="w-[160px] mx-auto mb-20" />
             <p className="size-5 font-medium mb-3">Email</p>
             <input
               className="w-full bg-white border border-black rounded-lg h-9 p-3 mb-5"
@@ -115,16 +121,36 @@ export default function SignIn() {
                 setPassword(e.target.value);
               }}
             ></input>
-            <p className="text-black hover:underline cursor-pointer">
-              Forgot password?
-            </p>
+            <div className="flex flex-row mb-5 items-center">
+              <input type="checkbox" className="w-4 h-4 accent-black" />
+              <label className="text-black mt-1 ml-2">Remember me</label>
+
+              <p className="text-black hover:underline mt-1 cursor-pointer ml-auto">
+                Forgot password?
+              </p>
+            </div>
+
             {error && <p className="text-red-500 mt-2">{error}</p>}
             <button
-              className="bg-black text-white rounded-3xl h-9 mt-5 w-1/3 mx-auto"
+              className="bg-black text-white rounded-xl py-3 mt-5 w-2/3 mx-auto font-bold"
               onClick={handleSignIn}
             >
               Sign In
             </button>
+
+            <div className="flex flex-row justify-center items-center gap-2 my-5">
+              <div className="w-40 h-0.5 bg-gray-400 rounded-full"></div>
+              <p className="text-black">or</p>
+              <div className="w-40 h-0.5 bg-gray-400 rounded-full"></div>
+            </div>
+
+            <div
+              className="flex flex-row justify-center items-center gap-5 bg-white text-black rounded-xl py-3 w-2/3 mx-auto border border-black hover:bg-gray-100"
+              onClick={handleSignIn}
+            >
+              <p className="text-black font-bold">Sign In with Google</p>
+              <img src={google} alt="google" className="w-5 h-5" />
+            </div>
           </div>
         </div>
       </div>
